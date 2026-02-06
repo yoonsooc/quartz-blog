@@ -38,10 +38,26 @@ export const defaultContentPageLayout: PageLayout = {
         { Component: Component.ReaderMode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      title: "목차",
+      folderDefaultState: "open",
+      folderClickBehavior: "collapse",
+    }),
   ],
   right: [
-    Component.Graph(),
+    Component.Graph({
+      localGraph: {
+        depth: 2,
+        showTags: true,
+        focusOnHover: true,
+      },
+      globalGraph: {
+        depth: -1,
+        showTags: true,
+        focusOnHover: true,
+        enableRadial: true,
+      },
+    }),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
@@ -62,7 +78,11 @@ export const defaultListPageLayout: PageLayout = {
         { Component: Component.Darkmode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      title: "목차",
+      folderDefaultState: "open",
+      folderClickBehavior: "collapse",
+    }),
   ],
   right: [],
 }
