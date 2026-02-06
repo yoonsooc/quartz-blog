@@ -1,0 +1,52 @@
+# ===========================
+# Quartz + GitHub Actions 최적화 .gitignore
+# ===========================
+
+# Node.js 의존성
+node_modules/
+
+# 빌드 출력물 (GitHub Actions에서 매번 새로 빌드)
+public/
+.quartz-cache/
+
+# 환경 변수 및 비밀 정보
+.env
+.env.local
+.env.*.local
+
+# 에디터 설정
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS 시스템 파일
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows 시스템 파일
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 로그 파일
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 디버그 및 프로파일링
+prof/
+*.cpuprofile
+*.heapprofile
+
+# 테스트 커버리지
+coverage/
+
+# 임시 파일
+*.tmp
+*.temp
+.cache/
