@@ -1,3 +1,267 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+// Mirror's Edge: Inter + Pretendard, clean sans-serif
+:root {
+  --headerFont: "Inter", "Pretendard Variable", sans-serif;
+  --bodyFont: "Inter", "Pretendard Variable", sans-serif;
+}
+
+// ===== Layout: Header-centered, no sidebars =====
+
+.page > #quartz-body {
+  max-width: 800px;
+  margin: 0 auto;
+  display: block;
+  padding: 0 1.5rem;
+}
+
+// Top bar — compact (demo 4: 0.8rem padding)
+.page > #quartz-body > .sidebar.left {
+  position: initial;
+  height: unset;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.8rem 0;
+  gap: 1rem;
+  border-bottom: 1px solid var(--secondary);
+  margin-bottom: 0;
+}
+
+.page > #quartz-body > .sidebar.left > .page-title {
+  flex: 1;
+  margin: 0;
+
+  a {
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: var(--dark);
+
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+.page > #quartz-body > .sidebar.left > .flex-row {
+  gap: 0.5rem;
+}
+
+.page > #quartz-body > .center > .page-header {
+  display: none !important;
+  margin: 0 !important;
+}
+
+.page > #quartz-body > .sidebar.right {
+  display: none;
+}
+
+.page > #quartz-body .sidebar {
+  position: initial;
+  height: unset;
+}
+
+.page > #quartz-body > .center {
+  max-width: 100%;
+}
+
+.page > #quartz-body > footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--secondary);
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+// ===== Content area: match demo 4 spacing exactly =====
+
+// Year headings (h2)
+.popover-hint > div > h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.popover-hint > div > h2 a {
+  color: var(--dark);
+  text-decoration: none;
+}
+
+// Month headings (h3) in archive listing
+.popover-hint > div > div > h3 {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+  margin: 1rem 0 0.5rem;
+}
+
+// Post list — override base listPage.scss defaults
+ul.section-ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+// Post items — override base margin-bottom: 1em
+li.section-li {
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--lightgray);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// Section — override base grid to flex
+li.section-li > .section {
+  display: flex !important;
+  grid-template-columns: none;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+// Date — override base opacity and margin
+li.section-li > .section > .meta,
+li.section-li > .section .meta {
+  font-size: 0.8rem;
+  color: var(--gray);
+  opacity: 1;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// Title — reset global h3 styles for post titles
+li.section-li > .section > .desc h3 {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--dark);
+  margin: 0;
+}
+
+li.section-li > .section > .desc h3 a {
+  color: var(--dark);
+  text-decoration: none;
+  background-color: transparent;
+  padding: 0;
+
+  &:hover {
+    color: var(--secondary);
+  }
+}
+
+// Tags inline — hide in list view
+li.section-li > .section > .tags {
+  display: none;
+}
+
+// Page listing container
+.page-listing {
+  margin: 0;
+  padding: 0;
+}
+
+// ===== Mirror's Edge Blog Styling =====
+
+// Clean link style
+a.internal {
+  background-color: transparent;
+  padding: 0;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+a.internal:hover {
+  text-decoration: none;
+  border-bottom: 1px solid var(--secondary);
+}
+
+// ===== Article page typography =====
+
+article > h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+}
+
+tbody,
+li,
+p {
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+// Tighter line-height for post listing items
+li.section-li {
+  line-height: 1.4;
+}
+
+blockquote {
+  border-left: 3px solid var(--secondary);
+  background: transparent;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0;
+  font-style: normal;
+  color: var(--gray);
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--lightgray);
+  margin: 2.5rem auto;
+  max-width: 40%;
+}
+
+// Hide the hr between content and page-footer
+.center > hr {
+  display: none;
+}
+
+// Tag links: pill style with accent
+ul.tags > li > a.tag-link {
+  border: 1px solid var(--secondary);
+  border-radius: 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: var(--secondary);
+    color: var(--light);
+  }
+}
+
+// Code blocks: sharp edges
+pre {
+  border-radius: 0;
+  border-left: 3px solid var(--tertiary);
+}

@@ -22,7 +22,9 @@ import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 import Flex from "./Flex"
+import DateArchiveContent from "./pages/DateArchiveContent"
 import ConditionalRender from "./ConditionalRender"
+import Hero from "./Hero"
 
 export {
   ArticleTitle,
@@ -50,4 +52,6 @@ export {
   Comments,
   Flex,
   ConditionalRender,
+  DateArchiveContent,
+  Hero,
 }

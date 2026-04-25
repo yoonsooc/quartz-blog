@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 3: Fixed + Blur + Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Inter", sans-serif;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  /* Blurred fixed background */
+  .bg-blur {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: url('./bg-city.png') center center / cover no-repeat;
+    filter: blur(8px) saturate(0.3);
+    opacity: 0.10;
+    transform: scale(1.05); /* hide blur edge artifacts */
+    pointer-events: none;
+  }
+
+  /* White overlay for readability */
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: rgba(255, 255, 255, 0.85);
+    pointer-events: none;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid #d62839;
+    margin-bottom: 1rem;
+  }
+  .top-bar .title {
+    flex: 1;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+  }
+  .top-bar .title a { color: #1a1a1a; text-decoration: none; }
+  .top-bar .controls { display: flex; gap: 0.5rem; font-size: 0.85rem; color: #b0b0b0; }
+
+  .year-heading {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .year-heading a { color: #1a1a1a; text-decoration: none; }
+  .month-heading {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    color: #d62839;
+    margin: 1rem 0 0.5rem;
+  }
+  .post-list { list-style: none; padding: 0; }
+  .post-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e8e8e8;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .post-item:last-child { border-bottom: none; }
+  .post-date { font-size: 0.8rem; color: #b0b0b0; white-space: nowrap; }
+  .post-title a {
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .post-title a:hover { color: #d62839; }
+
+  footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #d62839;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+  }
+
+  .demo-label {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: #d62839;
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 3px;
+    z-index: 10;
+  }
+
+  [data-theme="dark"] .bg-blur { filter: blur(8px) saturate(0.2) brightness(0.3); opacity: 0.15; }
+  [data-theme="dark"] .bg-overlay { background: rgba(14, 14, 14, 0.88); }
+  [data-theme="dark"] body { color: #f0f0f0; }
+  [data-theme="dark"] .top-bar { border-color: #ff3b4e; }
+  [data-theme="dark"] .top-bar .title a { color: #f0f0f0; }
+  [data-theme="dark"] .year-heading a { color: #f0f0f0; }
+  [data-theme="dark"] .month-heading { color: #ff3b4e; }
+  [data-theme="dark"] .post-item { border-color: #1e1e1e; }
+  [data-theme="dark"] .post-title a { color: #f0f0f0; }
+  [data-theme="dark"] .post-title a:hover { color: #ff3b4e; }
+  [data-theme="dark"] footer { border-color: #ff3b4e; }
+</style>
+</head>
+<body>
+<div class="bg-blur"></div>
+<div class="bg-overlay"></div>
+<div class="wrapper">
+  <div class="top-bar">
+    <div class="title"><a href="#">Nkinba</a></div>
+    <div class="controls">
+      <span>[Search]</span>
+      <button onclick="document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark'" style="background:none;border:1px solid #b0b0b0;color:inherit;cursor:pointer;padding:0.2rem 0.5rem;font-size:0.8rem;border-radius:2px;">Light/Dark</button>
+    </div>
+  </div>
+
+  <h2 class="year-heading"><a href="#">2026</a></h2>
+  <h3 class="month-heading">3월</h3>
+  <ul class="post-list">
+    <li class="post-item"><span class="post-date">Mar 12, 2026</span><span class="post-title"><a href="#">2026 Physical AI에 대한 커리어 전략</a></span></li>
+    <li class="post-item"><span class="post-date">Mar 05, 2026</span><span class="post-title"><a href="#">AW Summit 2026 소회</a></span></li>
+    <li class="post-item"><span class="post-date">Mar 04, 2026</span><span class="post-title"><a href="#">끄적끄적 2026-03</a></span></li>
+    <li class="post-item"><span class="post-date">Mar 02, 2026</span><span class="post-title"><a href="#">Ropeman 프로젝트 회고</a></span></li>
+    <li class="post-item"><span class="post-date">Mar 01, 2026</span><span class="post-title"><a href="#">Helm 정리</a></span></li>
+  </ul>
+
+  <h3 class="month-heading">2월</h3>
+  <ul class="post-list">
+    <li class="post-item"><span class="post-date">Feb 20, 2026</span><span class="post-title"><a href="#">Kubernetes Operator 패턴 분석</a></span></li>
+    <li class="post-item"><span class="post-date">Feb 15, 2026</span><span class="post-title"><a href="#">블록체인 기반 자격증명 시스템 개요</a></span></li>
+    <li class="post-item"><span class="post-date">Feb 08, 2026</span><span class="post-title"><a href="#">React Server Components 정리</a></span></li>
+  </ul>
+
+  <footer>Nkinba &copy; 2026</footer>
+</div>
+<div class="demo-label">3/4 Fixed + Blur + Overlay</div>
+</body>
+</html>
