@@ -89,9 +89,12 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 
             if (data.permalink != null && data.permalink.toString() !== "") {
               data.permalink = data.permalink.toString() as FullSlug
+              // Store original slug as alias so old URL still works
               const aliases = file.data.aliases ?? []
-              aliases.push(data.permalink)
+              aliases.push(file.data.slug as FullSlug)
               file.data.aliases = aliases
+              // Replace slug with permalink
+              file.data.slug = data.permalink as FullSlug
               allSlugs.push(data.permalink)
             }
 
