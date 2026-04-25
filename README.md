@@ -36,23 +36,26 @@ npm run format    # prettier 자동 포맷
 
 ## Obsidian 연동
 
-원본 노트는 Obsidian vault에 남기고, `content/` 디렉토리를 vault 내 특정 폴더로 **심볼릭 링크**해서 사용한다. 이렇게 하면 Quartz 시스템 파일과 노트가 물리적으로 분리된다.
+원본 노트는 Obsidian vault에 남기고, `content/` 디렉토리를 vault 내 **발행 전용 폴더(`_blog/`)** 로 symlink 해서 사용한다. PARA 같은 vault 내부 정리 구조가 공개 URL 에 노출되지 않도록, 발행할 글은 vault 안의 별도 영역에 모아둔다.
 
 ```bash
-# content 디렉토리가 이미 있다면 먼저 제거/백업
-rm -rf content
+# vault 안에 발행 전용 폴더 생성
+mkdir -p /path/to/ObsidianVault/_blog/posts
 
-# Obsidian vault 안의 게시 대상 폴더를 symlink
-ln -s /path/to/ObsidianVault/YourFolder content
+# content 디렉토리 재연결
+rm -rf content
+ln -s /path/to/ObsidianVault/_blog content
 
 # 확인
 ls -la content
-# → content -> /Users/you/Documents/.../ObsidianVault/YourFolder
+# → content -> /.../ObsidianVault/_blog
 ```
+
+이 레포의 실제 연결: `content -> ~/Documents/gdv/Obsidian/Yersona/_blog`
 
 ### 게시 규칙
 
-노트 프론트매터에 `publish: true`가 있는 파일만 빌드에 포함된다. 필터는 [`quartz.config.ts`](./quartz.config.ts)의 `Plugin.ExplicitPublish()` 가 담당.
+`_blog/` 안의 노트 중 프론트매터에 `publish: true` 가 있는 파일만 빌드에 포함된다. 필터는 [`quartz.config.ts`](./quartz.config.ts)의 `Plugin.ExplicitPublish()` 가 담당.
 
 ```yaml
 ---
@@ -62,6 +65,8 @@ tags:
   - engineering
 ---
 ```
+
+URL 슬러그는 `_blog/` 하위 경로 기준이다. 예: `_blog/posts/hello.md` → `/posts/hello/`. vault의 PARA 구조(`100. Inbox/`, `300. Resource/` 등)는 사이트에 노출되지 않는다.
 
 ### 무시되는 경로
 
@@ -94,52 +99,47 @@ tags:
 
 ## 배포
 
-### GitHub Pages (정적 호스팅)
+소스(이 레포, private)와 빌드 산출물(`nkinba/nkinba.github.io`, public)을 분리한다. Obsidian vault 가 로컬 symlink 로만 들어오므로 GitHub Actions 에서는 빌드가 불가능 — 로컬에서 빌드하고 결과만 푸시하는 수동 배포 방식을 쓴다.
+
+```
+quartz-blog (private)  ──[npx quartz build]──>  public/  ──[scripts/deploy.sh]──>  nkinba.github.io (public) → GitHub Pages
+```
+
+### 배포 실행
 
 ```bash
-npx quartz build
-# public/ 디렉토리 전체를 gh-pages 브랜치로 푸시
-npx quartz sync --no-pull
+./scripts/deploy.sh
 ```
 
-`quartz.config.ts` 의 `baseUrl` 을 실제 배포 도메인으로 변경해야 링크가 깨지지 않는다.
+스크립트가 하는 일:
+1. `npx quartz build` 실행 → `public/` 생성
+2. `~/.cache/quartz-blog-deploy` 에 `nkinba/nkinba.github.io` 를 clone (최초 1회) 또는 갱신
+3. `public/` 내용을 deploy clone 으로 `rsync --delete` (기존 파일 정리)
+4. `.nojekyll` 추가 (Jekyll 처리 비활성화)
+5. 타임스탬프 + 소스 커밋 SHA 가 들어간 메시지로 commit & push
 
-### GitHub Actions
+배포 위치를 바꾸려면 환경변수 `DEPLOY_WORK_DIR` 로 작업 디렉토리를 지정할 수 있다.
 
-`.github/workflows/ci.yaml` 은 업스트림 Quartz 의 CI (타입체크/포맷 검사) 이다. 직접 배포 파이프라인을 붙이려면 별도 워크플로우를 추가한다. 예시 — GitHub Pages 자동 배포:
+### 사이트
 
-```yaml
-# .github/workflows/deploy.yaml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - run: npm ci
-      - run: npx quartz build
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: public }
-      - uses: actions/deploy-pages@v4
-```
+- 라이브: https://nkinba.github.io/
+- 빌드 출력 레포: https://github.com/nkinba/nkinba.github.io
 
-> Obsidian vault 가 private 이라면 `content/` 는 CI에서 접근할 수 없다. 배포용으로는 ① vault 자체를 private repo 로 만들어 CI에서 checkout 하거나, ② 로컬에서 `npx quartz build` 후 `public/` 만 배포 브랜치로 푸시하는 방식을 쓴다.
+### 커스텀 도메인
+
+1. `nkinba.github.io` 레포 루트에 `CNAME` 파일 생성 (도메인만 한 줄)
+2. DNS 에 GitHub Pages IP 또는 `nkinba.github.io` CNAME 등록
+3. `quartz.config.ts` 의 `baseUrl` 을 새 도메인으로 변경 후 재배포
+
+`scripts/deploy.sh` 의 housekeeping 섹션에 `echo "your.domain" > "$WORK_DIR/CNAME"` 한 줄을 추가하면 매 배포마다 CNAME 이 유지된다.
 
 ## 디렉토리 구조
 
 ```
 quartz-blog/
-├── content/              # → Obsidian vault (symlink)
+├── content/              # → Obsidian vault/_blog (symlink)
+├── scripts/
+│   └── deploy.sh         # 빌드 + nkinba.github.io 푸시
 ├── quartz/
 │   ├── components/       # Preact 컴포넌트 (Hero, PageTitle, Footer ...)
 │   ├── plugins/
