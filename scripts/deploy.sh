@@ -13,6 +13,20 @@ WORK_DIR="${DEPLOY_WORK_DIR:-$HOME/.cache/quartz-blog-deploy}"
 
 log() { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
 
+# 0) Load secrets (STATICRYPT_PASSWORD lives here)
+if [ -f "$ROOT/.env" ]; then
+  log "Loading $ROOT/.env"
+  set -a
+  # shellcheck disable=SC1091
+  . "$ROOT/.env"
+  set +a
+fi
+
+if [ -z "${STATICRYPT_PASSWORD:-}" ]; then
+  echo "ERROR: STATICRYPT_PASSWORD is not set (export it or put it in .env)" >&2
+  exit 1
+fi
+
 # 1) Build
 log "Building Quartz site"
 cd "$ROOT"
@@ -22,6 +36,10 @@ if [ ! -d "$BUILD_DIR" ]; then
   echo "ERROR: build dir $BUILD_DIR not found" >&2
   exit 1
 fi
+
+# 1.5) Encrypt private routes (daily/*) + scrub index/feed/sitemap
+log "Encrypting private routes"
+node "$ROOT/scripts/encrypt-private.mjs"
 
 # 2) Prepare target clone
 if [ ! -d "$WORK_DIR/.git" ]; then

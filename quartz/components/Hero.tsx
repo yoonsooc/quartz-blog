@@ -11,8 +11,10 @@ export default ((opts: Options) => {
     const baseDir = pathToRoot(fileData.slug!)
     const imgSrc = joinSegments(baseDir, opts.image)
 
-    // Index page: full hero section
-    if (fileData.slug === "index") {
+    // Pages that get the full hero (root + daily landing/entries)
+    const slug = fileData.slug ?? ""
+    const fullHero = slug === "index" || slug === "daily" || slug.startsWith("daily/")
+    if (fullHero) {
       return (
         <div class="hero">
           <div class="hero-bg" data-src={imgSrc}></div>
