@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="staticrypt-html" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>/*[|template_title|]*/0</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- never cache the gate -->
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="pragma" content="no-cache" />
+
+        <!-- Quartz site CSS + fonts (so Hero, page-title nav, dark mode all match) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Inter:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;600&display=swap"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+        <link rel="stylesheet" href="/index.css" />
+        <link rel="icon" href="/static/icon.png" />
+
+        <script>
+            // Match Quartz's darkmode default: theme = localStorage["theme"] ?? "dark"
+            (function () {
+                try {
+                    var theme = localStorage.getItem("theme") || "dark"
+                    document.documentElement.setAttribute("saved-theme", theme)
+                } catch (e) {}
+            })()
+        </script>
+
+        <style>
+            html, body { margin: 0; padding: 0; background: var(--light); }
+            .staticrypt-body { font-family: var(--bodyFont, "Inter", sans-serif); color: var(--dark); }
+            .staticrypt-shell { max-width: 760px; margin: 0 auto; padding: 0 2rem 4rem; }
+            .staticrypt-shell .page-title { margin: 1.5rem 0 0; }
+            .staticrypt-divider {
+                border: 0;
+                border-top: 1px solid var(--secondary);
+                margin: 0.6rem 0 2rem;
+                opacity: 0.6;
+            }
+            .staticrypt-form {
+                background: var(--lightgray);
+                padding: 2rem;
+                border-radius: 10px;
+                max-width: 420px;
+                margin: 2rem auto;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                text-align: center;
+            }
+            .staticrypt-instructions { margin-bottom: 1rem; }
+            .staticrypt-title {
+                font-size: 1.25rem;
+                font-family: var(--headerFont);
+                font-weight: 700;
+                margin: 0 0 0.5rem;
+            }
+            .staticrypt-password-container {
+                position: relative;
+                background: var(--light);
+                margin: 0 0 1rem;
+                border: 1px solid var(--gray);
+                border-radius: 6px;
+            }
+            .staticrypt-form input[type="password"],
+            .staticrypt-form input[type="text"] {
+                background: inherit;
+                border: 0;
+                box-sizing: border-box;
+                font-size: 14px;
+                outline: 0;
+                padding: 12px 40px 12px 14px;
+                width: 100%;
+                color: var(--dark);
+                font-family: inherit;
+            }
+            .staticrypt-toggle-password-visibility {
+                cursor: pointer;
+                height: 18px;
+                opacity: 0.6;
+                padding: 12px;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 18px;
+            }
+            .staticrypt-form .staticrypt-decrypt-button {
+                text-transform: uppercase;
+                outline: 0;
+                background: var(--secondary);
+                width: 100%;
+                border: 0;
+                padding: 12px;
+                color: #fff;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                border-radius: 6px;
+                font-family: var(--headerFont);
+            }
+            .staticrypt-form .staticrypt-decrypt-button:hover { filter: brightness(92%); }
+            label.staticrypt-remember {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1em;
+                font-size: 0.9rem;
+                color: var(--darkgray);
+            }
+            .staticrypt-remember input[type="checkbox"] {
+                transform: scale(1.2);
+                margin-right: 0.75em;
+            }
+            .hidden { display: none !important; }
+            .staticrypt-spinner-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 200px;
+            }
+            .staticrypt-spinner {
+                display: inline-block;
+                width: 2rem;
+                height: 2rem;
+                border: 0.25em solid var(--gray);
+                border-right-color: transparent;
+                border-radius: 50%;
+                animation: staticrypt-spin 0.75s linear infinite;
+            }
+            @keyframes staticrypt-spin { 100% { transform: rotate(360deg); } }
+            @media screen and (-webkit-min-device-pixel-ratio: 0) {
+                .staticrypt-form input[type="password"],
+                .staticrypt-form input[type="text"] { font-size: 16px; }
+            }
+        </style>
+    </head>
+
+    <body class="staticrypt-body">
+        <div class="hero">
+            <div class="hero-bg" style="background-image: url('/static/bg-city.png');"></div>
+            <div class="hero-gradient"></div>
+            <div class="hero-content">
+                <div class="hero-title"><a href="/">NKNB's Blog</a></div>
+                <div class="hero-subtitle">notes on engineering, and thoughts</div>
+            </div>
+        </div>
+
+        <main class="staticrypt-shell">
+            <div id="staticrypt_loading" class="staticrypt-spinner-container">
+                <div class="staticrypt-spinner"></div>
+            </div>
+
+            <div id="staticrypt_content" class="staticrypt-content hidden">
+                <div class="staticrypt-form">
+                    <div class="staticrypt-instructions">
+                        <p class="staticrypt-title">/*[|template_title|]*/0</p>
+                        <p>/*[|template_instructions|]*/0</p>
+                    </div>
+
+                    <form id="staticrypt-form" action="#" method="post">
+                        <div class="staticrypt-password-container">
+                            <input
+                                id="staticrypt-password"
+                                type="password"
+                                name="password"
+                                autocomplete="current-password"
+                                placeholder="/*[|template_placeholder|]*/0"
+                                autofocus
+                            />
+                            <img
+                                class="staticrypt-toggle-password-visibility"
+                                alt="/*[|template_toggle_show|]*/0"
+                                title="/*[|template_toggle_show|]*/0"
+                                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNMzguOCA1LjFDMjguNC0zLjEgMTMuMy0xLjIgNS4xIDkuMlMtMS4yIDM0LjcgOS4yIDQyLjlsNTkyIDQ2NGMxMC40IDguMiAyNS41IDYuMyAzMy43LTQuMXM2LjMtMjUuNS00LjEtMzMuN0w1MjUuNiAzODYuN2MzOS42LTQwLjYgNjYuNC04Ni4xIDc5LjktMTE4LjRjMy4zLTcuOSAzLjMtMTYuNyAwLTI0LjZjLTE0LjktMzUuNy00Ni4yLTg3LjctOTMtMTMxLjFDNDY1LjUgNjguOCA0MDAuOCAzMiAzMjAgMzJjLTY4LjIgMC0xMjUgMjYuMy0xNjkuMyA2MC44TDM4LjggNS4xek0yMjMuMSAxNDkuNUMyNDguNiAxMjYuMiAyODIuNyAxMTIgMzIwIDExMmM3OS41IDAgMTQ0IDY0LjUgMTQ0IDE0NGMwIDI0LjktNi4zIDQ4LjMtMTcuNCA2OC43TDQwOCAyOTQuNWM4LjQtMTkuMyAxMC42LTQxLjQgNC44LTYzLjNjLTExLjEtNDEuNS00Ny44LTY5LjQtODguNi03MS4xYy01LjgtLjItOS4yIDYuMS03LjQgMTEuN2MyLjEgNi40IDMuMyAxMy4yIDMuMyAyMC4zYzAgMTAuMi0yLjQgMTkuOC02LjYgMjguM2wtOTAuMy03MC44ek0zNzMgMzg5LjljLTE2LjQgNi41LTM0LjMgMTAuMS01MyAxMC4xYy03OS41IDAtMTQ0LTY0LjUtMTQ0LTE0NGMwLTYuOSAuNS0xMy42IDEuNC0yMC4yTDgzLjEgMTYxLjVDNjAuMyAxOTEuMiA0NCAyMjAuOCAzNC41IDI0My43Yy0zLjMgNy45LTMuMyAxNi43IDAgMjQuNmMxNC45IDM1LjcgNDYuMiA4Ny43IDkzIDEzMS4xQzE3NC41IDQ0My4yIDIzOS4yIDQ4MCAzMjAgNDgwYzQ3LjggMCA4OS45LTEyLjkgMTI2LjItMzIuNUwzNzMgMzg5Ljl6Ii8+PC9zdmc+"
+                            />
+                        </div>
+
+                        <label
+                            id="staticrypt-remember-label"
+                            class="staticrypt-remember hidden"
+                        >
+                            <input
+                                id="staticrypt-remember"
+                                type="checkbox"
+                                name="remember"
+                            />
+                            /*[|template_remember|]*/0
+                        </label>
+
+                        <input
+                            type="submit"
+                            class="staticrypt-decrypt-button"
+                            value="/*[|template_button|]*/0"
+                        />
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            const staticryptInitiator = /*[|js_staticrypt|]*/ 0
+            const templateError = "/*[|template_error|]*/0",
+                templateToggleAltShow = "/*[|template_toggle_show|]*/0",
+                templateToggleAltHide = "/*[|template_toggle_hide|]*/0",
+                isRememberEnabled = /*[|is_remember_enabled|]*/ 0,
+                staticryptConfig = /*[|staticrypt_config|]*/ 0
+
+            const templateConfig = {
+                rememberExpirationKey: "staticrypt_expiration",
+                rememberPassphraseKey: "staticrypt_passphrase",
+                replaceHtmlCallback: null,
+                clearLocalStorageCallback: null,
+            }
+
+            const staticrypt = staticryptInitiator.init(staticryptConfig, templateConfig)
+
+            window.onload = async function () {
+                const { isSuccessful } = await staticrypt.handleDecryptOnLoad()
+                if (!isSuccessful) {
+                    document.getElementById("staticrypt_loading").classList.add("hidden")
+                    document.getElementById("staticrypt_content").classList.remove("hidden")
+                    document.getElementById("staticrypt-password").focus()
+                    if (isRememberEnabled) {
+                        document
+                            .getElementById("staticrypt-remember-label")
+                            .classList.remove("hidden")
+                    }
+                }
+            }
+
+            const toggleIcon = document.querySelector(".staticrypt-toggle-password-visibility")
+            toggleIcon.addEventListener("click", function () {
+                const passwordInput = document.getElementById("staticrypt-password")
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text"
+                    toggleIcon.alt = templateToggleAltHide
+                    toggleIcon.title = templateToggleAltHide
+                } else {
+                    passwordInput.type = "password"
+                    toggleIcon.alt = templateToggleAltShow
+                    toggleIcon.title = templateToggleAltShow
+                }
+            })
+
+            document
+                .getElementById("staticrypt-form")
+                .addEventListener("submit", async function (e) {
+                    e.preventDefault()
+                    const password = document.getElementById("staticrypt-password").value,
+                        isRememberChecked =
+                            document.getElementById("staticrypt-remember").checked
+                    const { isSuccessful } = await staticrypt.handleDecryptionOfPage(
+                        password,
+                        isRememberChecked,
+                    )
+                    if (!isSuccessful) alert(templateError)
+                })
+        </script>
+    </body>
+</html>
