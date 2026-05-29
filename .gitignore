@@ -9,6 +9,10 @@ node_modules/
 public/
 .quartz-cache/
 
+# Playwright MCP 테스트 산출물 (스크린샷, 콘솔 로그, 스냅샷)
+.playwright/
+.playwright-mcp/
+
 # 환경 변수 및 비밀 정보
 .env
 .env.local

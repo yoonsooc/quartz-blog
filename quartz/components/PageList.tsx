@@ -59,7 +59,16 @@ type Props = {
 
 export const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort }: Props) => {
   const sorter = sort ?? byDateAndAlphabeticalFolderFirst(cfg)
-  let list = allFiles.sort(sorter)
+  // Hide `private: true` pages from listings rendered outside their own
+  // top-level namespace. They still build and remain navigable via direct URL.
+  const currentTop = fileData.slug?.split("/")[0]
+  let list = allFiles
+    .filter((page) => {
+      if (!page.frontmatter?.private) return true
+      const pageTop = page.slug?.split("/")[0]
+      return pageTop === currentTop
+    })
+    .sort(sorter)
   if (limit) {
     list = list.slice(0, limit)
   }

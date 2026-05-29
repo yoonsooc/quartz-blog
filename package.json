@@ -17,7 +17,11 @@
     "check": "tsc --noEmit && npx prettier . --check",
     "format": "npx prettier . --write",
     "test": "tsx --test",
-    "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1"
+    "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
+    "build": "npx quartz build",
+    "build:secure": "npx quartz build && node scripts/encrypt-private.mjs",
+    "preview:secure": "bash scripts/preview-secure.sh",
+    "deploy": "bash scripts/deploy.sh"
   },
   "engines": {
     "npm": ">=10.9.2",
@@ -108,6 +112,7 @@
     "@types/yargs": "^17.0.35",
     "esbuild": "^0.28.0",
     "prettier": "^3.8.3",
+    "staticrypt": "^3.5.4",
     "tsx": "^4.22.0",
     "typescript": "^6.0.3"
   }
