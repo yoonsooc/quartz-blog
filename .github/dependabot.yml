@@ -5,10 +5,14 @@ updates:
     schedule:
       interval: "weekly"
     groups:
+      # major 업데이트는 그룹에서 제외되어 개별 PR로 분리됨 (breaking change 리뷰용)
       production-dependencies:
         applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

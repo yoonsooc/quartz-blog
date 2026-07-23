@@ -1,0 +1,46 @@
+name: Check Build
+
+# 이 포크(nkinba/quartz-blog) 전용 검증 워크플로우.
+# 업스트림의 ci.yaml/build-preview.yaml은 jackyzha0/quartz 조건으로 잠겨 있어
+# 이 저장소에서는 실행되지 않는다. dependabot PR이 런타임 breaking change를
+# 포함하는지 실제 빌드로 검증하는 것이 목적이다.
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Cache dependencies
+        uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - run: npm ci
+
+      # content는 로컬 Obsidian vault로의 심볼릭 링크라 저장소에 없다.
+      # 빌드 파이프라인(esbuild 트랜스파일 + 플러그인 로드) 검증용 최소 스텁을 만든다.
+      - name: Stub content directory
+        run: |
+          mkdir -p content
+          printf -- '---\ntitle: CI smoke test\npublish: true\n---\n\nbuild check\n' > content/index.md
+
+      - name: Build Quartz
+        run: npx quartz build
