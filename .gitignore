@@ -54,3 +54,12 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+# 콘텐츠 (로컬 Obsidian vault로의 심볼릭 링크 — 머신마다 경로가 다름)
+content
+
+# 빌드 캐시
+tsconfig.tsbuildinfo
+
+# npm 단일 체제 유지 (pnpm lockfile 커밋 방지)
+pnpm-lock.yaml
