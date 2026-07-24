@@ -66,6 +66,9 @@ rsync -a --delete \
 touch "$WORK_DIR/.nojekyll"  # disable Jekyll processing
 
 # 5) Commit + push
+# 빌드 레포에는 히스토리를 남기지 않는다(단일 orphan 커밋 + force push).
+# 과거 배포본이 히스토리에 쌓이면 삭제·암호화 이전의 산출물(og-image, 첨부,
+# 파일명)이 public 레포에서 영구 열람 가능해지기 때문.
 cd "$WORK_DIR"
 if [ -z "$(git status --porcelain)" ]; then
   log "No changes to deploy"
@@ -76,12 +79,14 @@ SRC_SHA="$(git -C "$ROOT" rev-parse --short HEAD)"
 SRC_BRANCH="$(git -C "$ROOT" rev-parse --abbrev-ref HEAD)"
 TS="$(date -u +'%Y-%m-%d %H:%M UTC')"
 
+git checkout --orphan deploy-fresh
 git add -A
 git commit -m "Deploy $TS
 
 Source: nkinba/quartz-blog @ $SRC_SHA ($SRC_BRANCH)"
+git branch -M deploy-fresh main
 
-log "Pushing to origin/main"
-git push origin main
+log "Pushing to origin/main (single-commit history)"
+git push --force origin main
 
 log "Done — https://nkinba.github.io/"
