@@ -1,0 +1,269 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+# NKNB's Blog — Quartz 5 설정 (v4 quartz.config.ts + quartz.layout.ts에서 이전)
+configuration:
+  pageTitle: NKNB's Blog
+  pageTitleSuffix: ""
+  enableSPA: true
+  enablePopovers: true
+  analytics:
+    provider: plausible
+  locale: en-US
+  baseUrl: nkinba.github.io
+  ignorePatterns:
+    - private
+    - templates
+    - .obsidian
+    - "**/*.base"
+  theme:
+    fontOrigin: googleFonts
+    cdnCaching: true
+    typography:
+      header: Inter
+      body: Inter
+      code: JetBrains Mono
+    colors:
+      lightMode:
+        light: "#ffffff"
+        lightgray: "#e8e8e8"
+        gray: "#b0b0b0"
+        darkgray: "#3a3a3a"
+        dark: "#1a1a1a"
+        secondary: "#d62839"
+        tertiary: "#2185d0"
+        highlight: rgba(214, 40, 57, 0.08)
+        textHighlight: "#ffe06688"
+      darkMode:
+        light: "#0e0e0e"
+        lightgray: "#1e1e1e"
+        gray: "#555555"
+        darkgray: "#d0d0d0"
+        dark: "#f0f0f0"
+        secondary: "#ff3b4e"
+        tertiary: "#4da8ff"
+        highlight: rgba(255, 59, 78, 0.12)
+        textHighlight: "#ffe06688"
+# 섹션 정의 단일 소스 (앵커로 각 플러그인 options에 공유)
+_sections: &sections
+  - { key: posts, label: Posts, prefix: "" }
+  - { key: daily, label: Daily, prefix: daily, private: true }
+plugins:
+  # ---------- local plugins ----------
+  - source: "./plugins/section-privacy"
+    enabled: true
+    options:
+      sections: *sections
+      passwordField: password
+    order: 890
+  - source: "./plugins/dataview-inline"
+    enabled: true
+    order: 35
+  - source: "./plugins/section-tabs"
+    enabled: true
+    options:
+      sections: *sections
+    layout:
+      position: left
+      priority: 10
+  - source: "./plugins/hero"
+    enabled: true
+    options:
+      image: static/bg-city.png
+      subtitle: "notes on engineering, and thoughts"
+      sections: *sections
+    layout:
+      position: beforeBody
+      priority: 1
+  # ---------- transformers ----------
+  - source: "@quartz-community/created-modified-date"
+    enabled: true
+    options:
+      defaultDateType: created
+      priority:
+        - frontmatter
+        - git
+        - filesystem
+    order: 10
+  - source: "@quartz-community/syntax-highlighting"
+    enabled: true
+    options:
+      theme:
+        light: github-light
+        dark: github-dark-dimmed
+      keepBackground: true
+    order: 20
+  - source: "@quartz-community/obsidian-flavored-markdown"
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+    order: 30
+  - source: "@quartz-community/github-flavored-markdown"
+    enabled: true
+    order: 40
+  - source: "@quartz-community/table-of-contents"
+    enabled: false
+    order: 50
+  - source: "@quartz-community/crawl-links"
+    enabled: true
+    options:
+      markdownLinkResolution: shortest
+    order: 60
+  - source: "@quartz-community/description"
+    enabled: true
+    order: 70
+  - source: "@quartz-community/latex"
+    enabled: true
+    options:
+      renderEngine: katex
+    order: 80
+  # ---------- filters ----------
+  - source: "@quartz-community/remove-draft"
+    enabled: true
+  - source: "@quartz-community/explicit-publish"
+    enabled: true
+  # ---------- emitters / misc ----------
+  - source: "@quartz-community/alias-redirects"
+    enabled: true
+  - source: "@quartz-community/content-index"
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: true
+  - source: "@quartz-community/favicon"
+    enabled: true
+  - source: "@quartz-community/og-image"
+    enabled: true
+  - source: "@quartz-community/cname"
+    enabled: false
+  - source: "@quartz-community/canvas-page"
+    enabled: false
+  - source: "@quartz-community/bases-page"
+    enabled: false
+  - source: "@quartz-community/content-page"
+    enabled: true
+  - source: "@quartz-community/folder-page"
+    enabled: true
+  - source: "@quartz-community/tag-page"
+    enabled: true
+  - source: "@quartz-community/quartz-fonts"
+    enabled: true
+  # ---------- privacy: 비공개 섹션 ----------
+  - source: "@quartz-community/unlisted-pages"
+    enabled: true
+    options: {}
+    order: 45
+  - source: "@quartz-community/encrypted-pages"
+    enabled: true
+    options:
+      iterations: 600000
+      passwordField: password
+      unlistWhenEncrypted: true
+      outputPath: static/encryptedContentIndex.json
+    order: 900
+    layout:
+      position: body
+      priority: 100
+      display: all
+  # ---------- layout components (v4 레이아웃 재현: 미니멀) ----------
+  - source: "@quartz-community/explorer"
+    enabled: false
+  - source: "@quartz-community/graph"
+    enabled: false
+  - source: "@quartz-community/backlinks"
+    enabled: false
+  - source: "@quartz-community/breadcrumbs"
+    enabled: false
+  - source: "@quartz-community/reader-mode"
+    enabled: false
+  - source: "@quartz-community/note-properties"
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties: []
+      excludedProperties: []
+      hidePropertiesView: true
+      delimiters: "---"
+      language: yaml
+    order: 5
+  - source: "@quartz-community/stacked-pages"
+    enabled: false
+  - source: "@quartz-community/comments"
+    enabled: false
+  - source: "@quartz-community/page-title"
+    enabled: false
+  - source: "@quartz-community/spacer"
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+  - source: "@quartz-community/search"
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: "@quartz-community/darkmode"
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: "@quartz-community/article-title"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+      condition: not-index
+  - source: "@quartz-community/content-meta"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+      condition: not-index
+  - source: "@quartz-community/tag-list"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 30
+      condition: not-index
+  - source: "@quartz-community/recent-notes"
+    enabled: true
+    options:
+      title: ""
+      limit: 100
+      showTags: true
+    layout:
+      position: afterBody
+      priority: 10
+  - source: "@quartz-community/footer"
+    enabled: true
+    options:
+      links: {}
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content: {}
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []

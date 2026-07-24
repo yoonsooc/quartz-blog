@@ -11,3 +11,9 @@ private/
 replit.nix
 .quartz/
 quartz/cli/tui/dist/
+
+# local: content symlink (machine-specific vault path)
+content
+
+# secrets
+.env

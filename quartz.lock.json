@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "plugins": {
+    "dataview-inline": {
+      "source": "./plugins/dataview-inline",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/dataview-inline",
+      "commit": "local",
+      "installedAt": "2026-07-24T18:48:56.708Z"
+    },
+    "hero": {
+      "source": "./plugins/hero",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/hero",
+      "commit": "local",
+      "installedAt": "2026-07-24T18:48:56.708Z"
+    },
+    "section-privacy": {
+      "source": "./plugins/section-privacy",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-privacy",
+      "commit": "local",
+      "installedAt": "2026-07-24T18:48:56.707Z"
+    },
+    "section-tabs": {
+      "source": "./plugins/section-tabs",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-tabs",
+      "commit": "local",
+      "installedAt": "2026-07-24T18:48:56.708Z"
+    }
+  }
+}

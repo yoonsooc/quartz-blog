@@ -1,0 +1,31 @@
+{
+  "name": "@nkinba/section-tabs",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": { "import": "./dist/index.js" },
+    "./components": { "import": "./dist/components/index.js" },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "section-tabs",
+    "displayName": "Section Tabs",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "SectionTabs": {
+        "displayName": "Section Tabs",
+        "defaultPosition": "left",
+        "defaultPriority": 10
+      }
+    }
+  }
+}

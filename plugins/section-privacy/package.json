@@ -1,0 +1,21 @@
+{
+  "name": "@nkinba/section-privacy",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": { "import": "./dist/index.js" },
+    "./package.json": "./package.json"
+  },
+  "quartz": {
+    "name": "section-privacy",
+    "displayName": "Section Privacy",
+    "category": "transformer",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 890,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}
