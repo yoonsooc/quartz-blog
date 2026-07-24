@@ -1,5 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { joinSegments, pathToRoot } from "../util/path"
+import { sectionOf } from "../util/sections"
 
 interface Options {
   image: string
@@ -11,9 +12,9 @@ export default ((opts: Options) => {
     const baseDir = pathToRoot(fileData.slug!)
     const imgSrc = joinSegments(baseDir, opts.image)
 
-    // Pages that get the full hero (root + daily landing/entries)
+    // Pages that get the full hero (root landing + non-root section pages)
     const slug = fileData.slug ?? ""
-    const fullHero = slug === "index" || slug === "daily" || slug.startsWith("daily/")
+    const fullHero = slug === "index" || sectionOf(slug).prefix !== ""
     if (fullHero) {
       return (
         <div class="hero">

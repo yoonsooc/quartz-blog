@@ -1,32 +1,35 @@
 import { joinSegments, pathToRoot } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import { sections, sectionOf, privatePrefixes } from "../util/sections"
 
 const PageTitle: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
   const baseDir = pathToRoot(fileData.slug!)
   const slug = fileData.slug ?? ""
-  const isDaily = slug === "daily" || slug.startsWith("daily/")
-  const dailyHref = joinSegments(baseDir, "daily/")
+  const activeKey = sectionOf(slug).key
   return (
     <h2 class={classNames(displayClass, "page-title")}>
-      <a
-        href={baseDir}
-        class={isDaily ? "section-link" : "section-link active"}
-        aria-current={isDaily ? undefined : "page"}
-      >
-        Posts
-      </a>
-      <span class="section-sep" aria-hidden="true">
-        |
-      </span>
-      <a
-        href={dailyHref}
-        class={isDaily ? "section-link active" : "section-link"}
-        aria-current={isDaily ? "page" : undefined}
-        data-router-ignore
-      >
-        Daily
-      </a>
+      {sections.map((s, i) => {
+        const href = s.prefix === "" ? baseDir : joinSegments(baseDir, `${s.prefix}/`)
+        const active = activeKey === s.key
+        return (
+          <>
+            {i > 0 && (
+              <span class="section-sep" aria-hidden="true">
+                |
+              </span>
+            )}
+            <a
+              href={href}
+              class={active ? "section-link active" : "section-link"}
+              aria-current={active ? "page" : undefined}
+              {...(s.private ? { "data-router-ignore": true } : {})}
+            >
+              {s.label}
+            </a>
+          </>
+        )
+      })}
     </h2>
   )
 }
@@ -34,12 +37,16 @@ const PageTitle: QuartzComponent = ({ fileData, displayClass }: QuartzComponentP
 PageTitle.afterDOMLoaded = `
   // StatiCrypt-protected routes can't be SPA-navigated (Quartz's micromorph
   // chokes on the password-form wrapper). Force a full page load for any
-  // link that targets /daily/* so the browser hits StatiCrypt directly.
+  // link that targets a private section so the browser hits StatiCrypt directly.
+  var privatePrefixes = ${JSON.stringify(privatePrefixes)}
   function markPrivateLinks() {
     document.querySelectorAll('a[href]').forEach(function (a) {
       try {
         var u = new URL(a.href, window.location.origin)
-        if (u.pathname === '/daily' || u.pathname.startsWith('/daily/')) {
+        var isPrivate = privatePrefixes.some(function (p) {
+          return u.pathname === '/' + p || u.pathname.startsWith('/' + p + '/')
+        })
+        if (isPrivate) {
           a.dataset.routerIgnore = ''
         }
       } catch (_) {}

@@ -1,6 +1,6 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
-import { SimpleSlug } from "./quartz/util/path"
 import * as Component from "./quartz/components"
+import { sectionOf } from "./quartz/util/sections"
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -43,6 +43,7 @@ export const defaultContentPageLayout: PageLayout = {
         filter: (page) =>
           !!page.slug &&
           page.slug !== "index" &&
+          sectionOf(page.slug).prefix === "" &&
           !page.slug.includes("/") &&
           !page.frontmatter?.private,
       }),

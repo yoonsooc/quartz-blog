@@ -1,0 +1,15 @@
+{
+  "sections": [
+    {
+      "key": "posts",
+      "label": "Posts",
+      "prefix": ""
+    },
+    {
+      "key": "daily",
+      "label": "Daily",
+      "prefix": "daily",
+      "private": true
+    }
+  ]
+}
