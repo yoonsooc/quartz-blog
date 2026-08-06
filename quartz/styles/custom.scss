@@ -1,3 +1,316 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// ============================================================
+// NKNB's Blog — v4 custom.scss 포팅 (Mirror's Edge 디자인)
+// 레이아웃: 상단 헤더 바 + 중앙 단일 칼럼(800px), 사이드바 없음.
+// v5 DOM 차이 대응:
+//  - 탭 컴포넌트: .page-title.section-tabs (로컬 section-tabs 플러그인)
+//  - 히어로가 banner 슬롯이 아니라 .page-header(beforeBody) 안에 렌더됨
+//    → full-bleed(100vw)로 빼내고, index에서 page-header를 숨기지 않는다
+//  - 검색+다크모드는 toolbar group(.flex-component)으로 렌더됨
+// ============================================================
+
+:root {
+  --headerFont: "Inter", "Pretendard Variable", sans-serif;
+  --bodyFont: "Inter", "Pretendard Variable", sans-serif;
+}
+
+// ===== Layout: 단일 칼럼 =====
+
+.page > #quartz-body {
+  max-width: 800px;
+  margin: 0 auto;
+  display: block;
+  padding: 0 1.5rem;
+}
+
+// 상단 바: 좌측 사이드바를 가로 헤더로 변환
+.page > #quartz-body .sidebar.left {
+  position: initial;
+  height: unset;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.8rem 0;
+  gap: 1rem;
+  border-bottom: 1px solid var(--secondary);
+  margin-bottom: 0;
+}
+
+.page > #quartz-body .sidebar.left .page-title {
+  flex: 1;
+  margin: 0;
+
+  a {
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: var(--dark);
+
+    &:hover {
+      color: var(--dark);
+    }
+  }
+}
+
+// 섹션 탭은 uppercase 헤더 스타일과 별개로 크기 유지
+.page > #quartz-body .sidebar.left .page-title.section-tabs a {
+  font-size: 1.1rem;
+}
+
+.page > #quartz-body .sidebar.left .flex-component {
+  gap: 0.5rem;
+}
+
+.page > #quartz-body .sidebar.right {
+  display: none;
+}
+
+.page > #quartz-body .sidebar {
+  position: initial;
+  height: unset;
+}
+
+.page-header {
+  margin: 0;
+}
+
+.page > #quartz-body footer,
+.page > #quartz-body .page-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--secondary);
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+// ===== Hero: page-header 내부에서 full-bleed로 확장 =====
+
+.hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+// ===== 목록(아카이브·최근 글) =====
+
+.popover-hint > div > h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.popover-hint > div > h2 a {
+  color: var(--dark);
+  text-decoration: none;
+}
+
+.popover-hint > div > div > h3 {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+  margin: 1rem 0 0.5rem;
+}
+
+ul.section-ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+li.section-li {
+  margin-bottom: 0;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--lightgray);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+li.section-li > .section {
+  display: flex !important;
+  grid-template-columns: none;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+li.section-li > .section .meta {
+  font-size: 0.8rem;
+  color: var(--gray);
+  opacity: 1;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+li.section-li > .section > .desc h3 {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--dark);
+  margin: 0;
+}
+
+li.section-li > .section > .desc h3 a {
+  color: var(--dark);
+  text-decoration: none;
+  background-color: transparent;
+  padding: 0;
+
+  &:hover {
+    color: var(--secondary);
+  }
+}
+
+li.section-li > .section > .tags {
+  display: none;
+}
+
+.page-listing {
+  margin: 0;
+  padding: 0;
+}
+
+// recent-notes(v5 플러그인)도 동일한 리스트 룩 적용
+.recent-notes .section {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--lightgray);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .meta {
+    font-size: 0.8rem;
+    color: var(--gray);
+    opacity: 1;
+    margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .desc h3 {
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: none;
+    letter-spacing: normal;
+    margin: 0;
+
+    a {
+      color: var(--dark);
+      text-decoration: none;
+      background-color: transparent;
+      padding: 0;
+
+      &:hover {
+        color: var(--secondary);
+      }
+    }
+  }
+
+  .tags {
+    display: none;
+  }
+}
+
+// ===== 링크 =====
+
+a.internal {
+  background-color: transparent;
+  padding: 0;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+a.internal:hover {
+  text-decoration: none;
+  border-bottom: 1px solid var(--secondary);
+}
+
+// ===== 본문 타이포그래피 =====
+
+article > h1,
+h1.article-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+}
+
+tbody,
+li,
+p {
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+blockquote {
+  border-left: 3px solid var(--secondary);
+  background: transparent;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0;
+  font-style: normal;
+  color: var(--gray);
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--lightgray);
+  margin: 2.5rem auto;
+  max-width: 40%;
+}
+
+.center > hr {
+  display: none;
+}
+
+// ===== 태그 =====
+
+ul.tags > li > a.tag-link {
+  border: 1px solid var(--secondary);
+  border-radius: 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: var(--secondary);
+    color: var(--light);
+  }
+}
+
+// ===== 코드 블록 =====
+
+pre {
+  border-radius: 0;
+  border-left: 3px solid var(--tertiary);
+}

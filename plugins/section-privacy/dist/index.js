@@ -12,9 +12,9 @@ export const SectionPrivacy = (opts) => {
 
   return {
     name: "SectionPrivacy",
-    markdownPlugins() {
+    markdownPlugins(ctx) {
       return [
-        () => (_tree, file) => {
+        () => (tree, file) => {
           const slug = file.data.slug ?? ""
           const isPrivate = privatePrefixes.some((p) => slug === p || slug.startsWith(`${p}/`))
           if (!isPrivate) return
@@ -41,6 +41,35 @@ export const SectionPrivacy = (opts) => {
           }
           delete file.data.frontmatter.description
           file.data.description = undefined
+
+          // 섹션 인덱스 노트에는 자식 노트 목록을 본문(암호화 영역)에 주입한다.
+          // 자식들은 unlisted라 폴더 자동 목록에 잡히지 않고, 암호화 영역 밖에
+          // 목록을 두면 제목이 평문 유출되기 때문. 잠금 해제 후에만 보인다.
+          const prefix = privatePrefixes.find((p) => slug === `${p}/index` || slug === p)
+          if (prefix) {
+            const children = (ctx?.allSlugs ?? [])
+              .filter((s) => s.startsWith(`${prefix}/`) && s !== `${prefix}/index`)
+              .sort()
+              .reverse()
+            const items = children.map((s) => {
+              const name = s.slice(prefix.length + 1)
+              return {
+                type: "listItem",
+                spread: false,
+                children: [
+                  {
+                    type: "paragraph",
+                    children: [
+                      { type: "link", url: `/${s}`, children: [{ type: "text", value: name }] },
+                    ],
+                  },
+                ],
+              }
+            })
+            if (items.length > 0) {
+              tree.children.push({ type: "list", ordered: false, spread: false, children: items })
+            }
+          }
         },
       ]
     },
