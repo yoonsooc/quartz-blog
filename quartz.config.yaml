@@ -8,7 +8,7 @@ configuration:
   analytics:
     provider: plausible
   locale: en-US
-  baseUrl: nkinba.github.io
+  baseUrl: yoonsooc.github.io
   ignorePatterns:
     - private
     - templates

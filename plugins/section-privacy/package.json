@@ -1,5 +1,5 @@
 {
-  "name": "@nkinba/section-privacy",
+  "name": "@yoonsooc/section-privacy",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@nkinba/section-tabs",
+  "name": "@yoonsooc/section-tabs",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",

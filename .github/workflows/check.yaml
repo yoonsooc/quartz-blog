@@ -1,6 +1,6 @@
 name: Check Build
 
-# 이 포크(nkinba/quartz-blog) 전용 검증 워크플로우.
+# 이 포크(yoonsooc/quartz-blog) 전용 검증 워크플로우.
 # 업스트림의 ci.yaml/build-preview.yaml은 jackyzha0/quartz 조건으로 잠겨 있어
 # 이 저장소에서는 실행되지 않는다. dependabot PR이 런타임 breaking change를
 # 포함하는지 실제 빌드로 검증하는 것이 목적이다.

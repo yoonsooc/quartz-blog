@@ -1,5 +1,5 @@
 {
-  "name": "@nkinba/hero",
+  "name": "@yoonsooc/hero",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",

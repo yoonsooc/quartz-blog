@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Build the Quartz site and push public/ to the GitHub Pages repo.
 #
-# Source: nkinba/quartz-blog (this repo)
-# Target: nkinba/nkinba.github.io  →  https://nkinba.github.io/
+# Source: yoonsooc/quartz-blog (this repo)
+# Target: yoonsooc/yoonsooc.github.io  →  https://yoonsooc.github.io/
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT/public"
-TARGET_REPO="https://github.com/nkinba/nkinba.github.io.git"
+TARGET_REPO="https://github.com/yoonsooc/yoonsooc.github.io.git"
 WORK_DIR="${DEPLOY_WORK_DIR:-$HOME/.cache/quartz-blog-deploy}"
 
 log() { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
@@ -86,10 +86,10 @@ git checkout --orphan deploy-fresh
 git add -A
 git commit -m "Deploy $TS
 
-Source: nkinba/quartz-blog @ $SRC_SHA ($SRC_BRANCH)"
+Source: yoonsooc/quartz-blog @ $SRC_SHA ($SRC_BRANCH)"
 git branch -M deploy-fresh main
 
 log "Pushing to origin/main (single-commit history)"
 git push --force origin main
 
-log "Done — https://nkinba.github.io/"
+log "Done — https://yoonsooc.github.io/"

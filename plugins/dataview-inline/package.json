@@ -1,5 +1,5 @@
 {
-  "name": "@nkinba/dataview-inline",
+  "name": "@yoonsooc/dataview-inline",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
