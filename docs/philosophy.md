@@ -1,47 +1,47 @@
 ---
-title: Philosophy of Quartz
+title: Quartz의 철학
 ---
 
-## A garden should be a true hypertext
+## 정원은 진정한 하이퍼텍스트여야 한다
 
-> The garden is the web as topology. Every walk through the garden creates new paths, new meanings, and when we add things to the garden we add them in a way that allows many future, unpredicted relationships.
+> 정원은 위상(topology)으로서의 웹이다. 정원을 거니는 모든 산책은 새로운 길과 새로운 의미를 만들어 내며, 정원에 무언가를 더할 때 우리는 미래의 예측하지 못한 수많은 관계를 허용하는 방식으로 더한다.
 >
 > _(The Garden and the Stream)_
 
-The problem with the file cabinet is that it focuses on efficiency of access and interoperability rather than generativity and creativity. Thinking is not linear, nor is it hierarchical. In fact, not many things are linear or hierarchical at all. Then why is it that most tools and thinking strategies assume a nice chronological or hierarchical order for my thought processes?
+파일 캐비닛의 문제는 생성성과 창의성보다 접근 효율성과 상호운용성에 초점을 맞춘다는 점이다. 사고는 선형적이지 않고 위계적이지도 않다. 사실 선형적이거나 위계적인 것 자체가 그리 많지 않다. 그런데 왜 대부분의 도구와 사고 전략은 내 사고 과정이 깔끔한 시간순 또는 위계적 순서를 따른다고 가정하는 것일까?
 
-The ideal tool for thought for me would embrace the messiness of my mind, and organically help insights emerge from chaos instead of forcing an artificial order. A rhizomatic, not arboresecent, form of note taking.
+나에게 이상적인 사고 도구란 내 정신의 어수선함을 받아들이고, 인위적인 질서를 강요하는 대신 혼돈 속에서 통찰이 유기적으로 떠오르도록 돕는 도구다. 즉 수목형(arborescent)이 아니라 리좀형(rhizomatic) 노트 작성이다.
 
-My goal with a digital garden is not purely as an organizing system and information store (though it works nicely for that). I want my digital garden to be a playground for new ways ideas can connect together. As a result, existing formal organizing systems like Zettelkasten or the hierarchical folder structures of Notion don’t work well for me. There is way too much upfront friction that by the time I’ve thought about how to organize my thought into folders categories, I’ve lost it.
+디지털 정원에 대한 내 목표는 순수하게 정리 시스템이나 정보 저장소로 쓰는 것이 아니다(물론 그런 용도로도 잘 동작한다). 나는 내 디지털 정원이 아이디어들이 새로운 방식으로 연결될 수 있는 놀이터가 되기를 바란다. 그래서 Zettelkasten 같은 기존의 형식적인 정리 시스템이나 Notion의 위계적 폴더 구조는 나에게 잘 맞지 않는다. 사전에 요구되는 마찰이 너무 커서, 생각을 어떤 폴더와 카테고리로 정리할지 고민하는 사이에 그 생각을 잃어버리고 만다.
 
-Quartz embraces the inherent rhizomatic and web-like nature of our thinking and tries to encourage note-taking in a similar form.
-
----
-
-## A garden should be shared
-
-The goal of digital gardening should be to tap into your network’s collective intelligence to create constructive feedback loops. If done well, I have a shareable representation of my thoughts that I can send out into the world and people can respond. Even for my most half-baked thoughts, this helps me create a feedback cycle to strengthen and fully flesh out that idea.
-
-Quartz is designed first and foremost as a tool for publishing [digital gardens](https://jzhao.xyz/posts/networked-thought) to the web. To me, digital gardening is not just passive knowledge collection. It’s a form of expression and sharing.
-
-> “[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.”
-> — Richard Hamming
-
-**The goal of Quartz is to make sharing your digital garden free and simple.**
+Quartz는 우리 사고가 본래 지닌 리좀적이고 거미줄 같은 성질을 받아들이고, 그와 비슷한 형태의 노트 작성을 장려하려 한다.
 
 ---
 
-## A garden should be your own
+## 정원은 공유되어야 한다
 
-At its core, Quartz is designed to be easy to use enough for non-technical people to get going but also powerful enough that senior developers can tweak it to work how they'd like it to work.
+디지털 가드닝의 목표는 네트워크의 집단 지성을 활용해 건설적인 피드백 루프를 만드는 것이어야 한다. 이것이 잘 되면 내 생각을 공유 가능한 형태로 세상에 내보낼 수 있고 사람들이 거기에 반응할 수 있다. 아직 설익은 생각조차도, 이를 통해 그 아이디어를 다듬고 온전히 발전시키는 피드백 사이클을 만들 수 있다.
 
-1. If you like the default configuration of Quartz and just want to change the content, the only thing that you need to change is the contents of the `content` folder.
-2. If you'd like to make basic configuration tweaks but don't want to edit source code, one can tweak the plugins and components in `quartz.config.yaml` in a guided manner to their liking.
-3. If you'd like to tweak the actual source code of the underlying plugins, components, or even build process, Quartz purposefully ships its full source code to the end user to allow customization at this level too.
+Quartz는 무엇보다도 [디지털 정원](https://jzhao.xyz/posts/networked-thought)을 웹에 발행하기 위한 도구로 설계되었다. 나에게 디지털 가드닝은 단순히 수동적인 지식 수집이 아니다. 표현과 공유의 한 형태다.
 
-Most software either confines you to either
+> "문을 열어 놓고 일하는 [사람은] 온갖 방해를 받지만, 세상이 무엇이고 무엇이 중요할지에 대한 단서 또한 이따금 얻는다."
+> — 리처드 해밍(Richard Hamming)
 
-1. Makes it easy to tweak content but not the presentation
-2. Gives you too many knobs to tune the presentation without good opinionated defaults
+**Quartz의 목표는 디지털 정원의 공유를 무료로, 그리고 간단하게 만드는 것이다.**
 
-**Quartz should feel powerful but ultimately be an intuitive tool fully within your control.** It should be a piece of [agentic software](https://jzhao.xyz/posts/agentic-computing). Ultimately, it should have the right affordances to nudge users towards good defaults but never dictate what the 'correct' way of using it is.
+---
+
+## 정원은 자신의 것이어야 한다
+
+Quartz는 근본적으로 비개발자도 쉽게 시작할 수 있을 만큼 사용하기 쉬우면서도, 시니어 개발자가 원하는 대로 동작하도록 손볼 수 있을 만큼 강력하도록 설계되었다.
+
+1. Quartz의 기본 설정이 마음에 들고 콘텐츠만 바꾸고 싶다면, `content` 폴더의 내용만 변경하면 된다.
+2. 기본적인 설정을 조정하고 싶지만 소스 코드를 편집하고 싶지 않다면, `quartz.config.yaml`에서 플러그인과 컴포넌트를 안내에 따라 취향대로 조정할 수 있다.
+3. 기반이 되는 플러그인, 컴포넌트, 나아가 빌드 과정의 실제 소스 코드까지 손보고 싶다면, Quartz는 이 수준의 커스터마이즈도 가능하도록 의도적으로 전체 소스 코드를 최종 사용자에게 제공한다.
+
+대부분의 소프트웨어는 다음 둘 중 하나에 사용자를 가둔다
+
+1. 콘텐츠는 쉽게 바꿀 수 있지만 표현 방식은 그렇지 않다
+2. 좋은 주관이 담긴 기본값 없이 표현 방식을 조정하는 손잡이만 지나치게 많이 제공한다
+
+**Quartz는 강력하게 느껴지되 궁극적으로는 온전히 사용자의 통제 아래 있는 직관적인 도구여야 한다.** 그것은 [행위주체적 소프트웨어(agentic software)](https://jzhao.xyz/posts/agentic-computing)의 하나여야 한다. 궁극적으로 사용자를 좋은 기본값으로 이끄는 적절한 어포던스(affordance)를 갖추되, 무엇이 '올바른' 사용법인지 결코 강요하지 않아야 한다.

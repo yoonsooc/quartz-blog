@@ -1,11 +1,11 @@
 ---
-title: Creating Component Plugins
+title: 컴포넌트 플러그인 만들기
 ---
 
 > [!warning]
-> This guide assumes you have experience writing JavaScript and are familiar with TypeScript.
+> 이 가이드는 JavaScript 작성 경험이 있고 TypeScript에 익숙하다는 것을 전제로 한다.
 
-Normally on the web, we write layout code using HTML which looks something like the following:
+일반적으로 웹에서는 다음과 같은 HTML로 레이아웃 코드를 작성한다:
 
 ```html
 <article>
@@ -14,19 +14,19 @@ Normally on the web, we write layout code using HTML which looks something like 
 </article>
 ```
 
-This piece of HTML represents an article with a leading header that says "An article header" and a paragraph that contains the text "Some content". This is combined with CSS to style the page and JavaScript to add interactivity.
+이 HTML 조각은 "An article header"라는 머리글과 "Some content"라는 텍스트를 담은 문단으로 시작하는 글(article)을 나타낸다. 여기에 페이지를 꾸미기 위한 CSS와 상호작용을 더하기 위한 JavaScript가 결합된다.
 
-However, HTML doesn't let you create reusable templates. If you wanted to create a new page, you would need to copy and paste the above snippet and edit the header and content yourself. This isn't great if we have a lot of content on our site that shares a lot of similar layout. The smart people who created React also had similar complaints and invented the concept of Components -- JavaScript functions that return JSX -- to solve the code duplication problem.
+하지만 HTML로는 재사용 가능한 템플릿을 만들 수 없다. 새 페이지를 만들고 싶다면 위 코드 조각을 복사해 붙여 넣고 머리글과 내용을 직접 수정해야 한다. 사이트에 비슷한 레이아웃을 공유하는 콘텐츠가 많다면 이는 좋은 방식이 아니다. React를 만든 똑똑한 사람들도 비슷한 불만을 가졌고, 이 코드 중복 문제를 해결하기 위해 컴포넌트(Component)라는 개념, 즉 JSX를 반환하는 JavaScript 함수를 발명했다.
 
-In effect, components allow you to write a JavaScript function that takes some data and produces HTML as an output. **While Quartz doesn't use React, it uses the same component concept to allow you to easily express layout templates in your Quartz site.**
+요컨대 컴포넌트를 사용하면 어떤 데이터를 받아 HTML을 출력으로 만들어내는 JavaScript 함수를 작성할 수 있다. **Quartz는 React를 사용하지 않지만, 같은 컴포넌트 개념을 사용해 Quartz 사이트에서 레이아웃 템플릿을 쉽게 표현할 수 있게 해준다.**
 
-## Community Component Plugins
+## 커뮤니티 컴포넌트 플러그인
 
-In v5, most components are community plugins — standalone repositories that export a `QuartzComponent`. These plugins are decoupled from the core Quartz repository, allowing for easier maintenance and sharing.
+v5에서는 대부분의 컴포넌트가 커뮤니티 플러그인, 즉 `QuartzComponent`를 내보내는 독립적인 저장소이다. 이 플러그인들은 Quartz 코어 저장소로부터 분리되어 있어서, 유지보수와 공유가 더 쉽다.
 
-### Getting Started
+### 시작하기
 
-To create a new component plugin, you can use the official plugin template:
+새 컴포넌트 플러그인을 만들려면 공식 플러그인 템플릿을 사용할 수 있다:
 
 ```shell
 git clone https://github.com/quartz-community/plugin-template.git my-component
@@ -34,9 +34,9 @@ cd my-component
 npm install
 ```
 
-### Plugin Structure
+### 플러그인 구조
 
-A component plugin's `src/index.ts` typically exports a function (a constructor) that returns a `QuartzComponent`. This allows users to pass configuration options to your component.
+컴포넌트 플러그인의 `src/index.ts`는 보통 `QuartzComponent`를 반환하는 함수(생성자)를 내보낸다. 이를 통해 사용자가 컴포넌트에 설정 옵션을 전달할 수 있다.
 
 ```tsx title="src/index.ts"
 import {
@@ -69,7 +69,7 @@ export default MyComponent
 
 ### Props
 
-All Quartz components accept the same set of props:
+모든 Quartz 컴포넌트는 동일한 프로퍼티(props) 집합을 받는다:
 
 ```tsx
 export type QuartzComponentProps = {
@@ -81,17 +81,17 @@ export type QuartzComponentProps = {
 }
 ```
 
-- `fileData`: Any metadata plugins may have added to the current page.
-  - `fileData.slug`: slug of the current page.
-  - `fileData.frontmatter`: any frontmatter parsed.
-- `cfg`: The `configuration` field in `quartz.config.yaml`.
-- `tree`: the resulting [HTML AST](https://github.com/syntax-tree/hast) after processing and transforming the file.
-- `allFiles`: Metadata for all files that have been parsed. Useful for doing page listings or figuring out the overall site structure.
-- `displayClass`: a utility class that indicates a preference from the user about how to render it in a mobile or desktop setting.
+- `fileData`: 플러그인들이 현재 페이지에 추가했을 수 있는 모든 메타데이터.
+  - `fileData.slug`: 현재 페이지의 slug.
+  - `fileData.frontmatter`: 파싱된 모든 frontmatter.
+- `cfg`: `quartz.config.yaml`의 `configuration` 필드.
+- `tree`: 파일을 처리하고 변환한 결과인 [HTML AST](https://github.com/syntax-tree/hast).
+- `allFiles`: 파싱된 모든 파일의 메타데이터. 페이지 목록을 만들거나 사이트 전체 구조를 파악할 때 유용하다.
+- `displayClass`: 모바일 또는 데스크톱 환경에서 어떻게 렌더링할지에 대한 사용자의 선호를 나타내는 유틸리티 클래스.
 
-### Styling
+### 스타일링
 
-In community plugins, styles are bundled with the plugin. You can define styles using the `.css` property on the component:
+커뮤니티 플러그인에서는 스타일이 플러그인과 함께 번들링된다. 컴포넌트의 `.css` 프로퍼티를 사용해 스타일을 정의할 수 있다:
 
 ```tsx
 Component.css = `
@@ -99,7 +99,7 @@ Component.css = `
 `
 ```
 
-For SCSS, you can import it and assign it to the `.css` property. The build system will handle the transformation:
+SCSS의 경우, 임포트해서 `.css` 프로퍼티에 할당하면 된다. 변환은 빌드 시스템이 처리한다:
 
 ```tsx
 import styles from "./styles.scss"
@@ -107,13 +107,13 @@ Component.css = styles
 ```
 
 > [!warning]
-> Quartz does not use CSS modules so any styles you declare here apply _globally_. If you only want it to apply to your component, make sure you use specific class names and selectors.
+> Quartz는 CSS 모듈을 사용하지 않으므로 여기서 선언한 스타일은 _전역적으로_ 적용된다. 자신의 컴포넌트에만 적용하고 싶다면 구체적인 클래스 이름과 선택자를 사용해야 한다.
 
-### Internationalization
+### 국제화
 
-Component plugins should use the i18n pattern for any user-facing strings. See [[making plugins#Internationalization (i18n)]] for the full setup guide.
+컴포넌트 플러그인은 사용자에게 노출되는 모든 문자열에 i18n 패턴을 사용해야 한다. 전체 설정 가이드는 [[making plugins#Internationalization (i18n)|플러그인 만들기#국제화 (i18n)]]를 참고하라.
 
-Quick reference:
+간단한 참고 예시:
 
 ```tsx
 import { i18n } from "../i18n"
@@ -124,16 +124,16 @@ const MyComponent: QuartzComponent = ({ cfg }) => {
 }
 ```
 
-Always provide at least an `en-US` locale as the fallback. Additional locales are optional but encouraged for international reach.
+폴백으로 최소한 `en-US` 로케일은 항상 제공해야 한다. 추가 로케일은 선택 사항이지만, 국제적인 도달 범위를 위해 권장된다.
 
-### Scripts and Interactivity
+### 스크립트와 상호작용
 
-For interactivity, you can declare `.beforeDOMLoaded` and `.afterDOMLoaded` properties on the component. These should be strings containing the JavaScript to be executed in the browser.
+상호작용이 필요하면 컴포넌트에 `.beforeDOMLoaded`와 `.afterDOMLoaded` 프로퍼티를 선언할 수 있다. 이들은 브라우저에서 실행될 JavaScript를 담은 문자열이어야 한다.
 
-- `.beforeDOMLoaded`: Executed _before_ the page is done loading. Used for prefetching or early initialization.
-- `.afterDOMLoaded`: Executed once the page has been completely loaded.
+- `.beforeDOMLoaded`: 페이지 로딩이 끝나기 _전에_ 실행된다. 프리페칭(prefetching)이나 초기 초기화에 사용된다.
+- `.afterDOMLoaded`: 페이지가 완전히 로드된 후 실행된다.
 
-If you need to create an `afterDOMLoaded` script that depends on page-specific elements that may change when navigating, listen for the `"nav"` event:
+네비게이션 시 바뀔 수 있는 페이지별 요소에 의존하는 `afterDOMLoaded` 스크립트를 만들어야 한다면, `"nav"` 이벤트를 수신하면 된다:
 
 ```ts
 document.addEventListener("nav", () => {
@@ -146,9 +146,9 @@ document.addEventListener("nav", () => {
 })
 ```
 
-You can also use the `"prenav"` event, which fires before the page is replaced during SPA navigation.
+SPA 네비게이션 중에 페이지가 교체되기 전에 발생하는 `"prenav"` 이벤트도 사용할 수 있다.
 
-The `"render"` event fires when the DOM has been updated in-place without a full navigation — for example, after content decryption or dynamic DOM modifications by other plugins. If your component attaches event listeners to content elements, listen for `"render"` in addition to `"nav"` to ensure re-initialization:
+`"render"` 이벤트는 전체 네비게이션 없이 DOM이 제자리에서 갱신되었을 때 발생하는데, 예를 들어 콘텐츠 복호화 후나 다른 플러그인에 의한 동적 DOM 수정 후가 그렇다. 컴포넌트가 콘텐츠 요소에 이벤트 리스너를 붙인다면, 재초기화를 보장하기 위해 `"nav"`에 더해 `"render"`도 수신해야 한다:
 
 ```ts
 function setupMyComponent() {
@@ -163,11 +163,11 @@ document.addEventListener("nav", setupMyComponent)
 document.addEventListener("render", setupMyComponent)
 ```
 
-It is best practice to track any event handlers via `window.addCleanup` to prevent memory leaks during SPA navigation.
+SPA 네비게이션 중 메모리 누수를 방지하기 위해, 모든 이벤트 핸들러를 `window.addCleanup`으로 추적하는 것이 모범 사례이다.
 
-#### Importing Code
+#### 코드 임포트하기
 
-In community plugins, TypeScript scripts should be transpiled at build time. The plugin template includes an `inlineScriptPlugin` in `tsup.config.ts` that automatically transpiles `.inline.ts` files imported as text:
+커뮤니티 플러그인에서 TypeScript 스크립트는 빌드 시점에 트랜스파일되어야 한다. 플러그인 템플릿의 `tsup.config.ts`에는 텍스트로 임포트된 `.inline.ts` 파일을 자동으로 트랜스파일하는 `inlineScriptPlugin`이 포함되어 있다:
 
 ```tsx title="src/index.ts"
 import script from "./script.inline.ts"
@@ -178,17 +178,17 @@ const Component: QuartzComponent = (props) => {
 Component.afterDOMLoaded = script
 ```
 
-The `inlineScriptPlugin` handles transpiling TypeScript to browser-compatible JavaScript during the build step, allowing you to write type-safe client-side code.
+`inlineScriptPlugin`은 빌드 단계에서 TypeScript를 브라우저 호환 JavaScript로 트랜스파일하는 일을 처리하므로, 타입 안전한 클라이언트 사이드 코드를 작성할 수 있다.
 
-### Installing Your Component
+### 컴포넌트 설치하기
 
-Once your component is published (e.g., to GitHub or npm), users can install it using the Quartz CLI:
+컴포넌트가 (예를 들어 GitHub이나 npm에) 게시되고 나면, 사용자는 Quartz CLI를 사용해 설치할 수 있다:
 
 ```shell
 npx quartz plugin add github:your-username/my-component
 ```
 
-Then, they can add it to their `quartz.config.yaml`:
+그런 다음 `quartz.config.yaml`에 추가하면 된다:
 
 ```yaml title="quartz.config.yaml"
 plugins:
@@ -201,7 +201,7 @@ plugins:
       priority: 60
 ```
 
-For advanced usage via the TS override in `quartz.ts`:
+`quartz.ts`의 TS 오버라이드를 통한 고급 사용법은 다음과 같다:
 
 ```ts title="quartz.ts (override)"
 import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
@@ -218,11 +218,11 @@ export const layout = await loadQuartzLayout({
 })
 ```
 
-### Receiving YAML Options in Component-Only Plugins
+### 컴포넌트 전용 플러그인에서 YAML 옵션 받기
 
-Component plugins that also belong to a processing category (transformer, filter, emitter, page type) receive options through their factory function automatically. However, **component-only plugins** — those whose manifest declares only `"category": ["component"]` — are loaded via side-effect import and don't go through the factory path.
+처리 카테고리(transformer, filter, emitter, 페이지 타입)에도 속하는 컴포넌트 플러그인은 팩토리 함수를 통해 자동으로 옵션을 받는다. 하지만 **컴포넌트 전용 플러그인**, 즉 매니페스트에 `"category": ["component"]`만 선언한 플러그인은 부수 효과(side-effect) 임포트로 로드되기 때문에 팩토리 경로를 거치지 않는다.
 
-To receive YAML options in a component-only plugin, export an `init` function from your entry point:
+컴포넌트 전용 플러그인에서 YAML 옵션을 받으려면 진입점에서 `init` 함수를 내보내면 된다:
 
 ```ts title="src/index.ts"
 export function init(options?: Record<string, unknown>): void {
@@ -232,9 +232,9 @@ export function init(options?: Record<string, unknown>): void {
 }
 ```
 
-Quartz's config-loader calls `init()` after importing the module, passing the merged result of your manifest's `defaultOptions` and the user's `options` from `quartz.config.yaml`. The merge follows the same `{ ...defaultOptions, ...userOptions }` pattern used for processing plugins — user values take precedence.
+Quartz의 config-loader는 모듈을 임포트한 후 `init()`을 호출하며, 이때 매니페스트의 `defaultOptions`와 사용자가 `quartz.config.yaml`에 적은 `options`를 병합한 결과를 전달한다. 병합은 처리 플러그인에 사용되는 것과 같은 `{ ...defaultOptions, ...userOptions }` 패턴을 따르므로, 사용자 값이 우선한다.
 
-Declare your defaults in `package.json`:
+기본값은 `package.json`에 선언한다:
 
 ```json title="package.json"
 {
@@ -247,20 +247,20 @@ Declare your defaults in `package.json`:
 }
 ```
 
-If your plugin does not export `init`, it continues to work as a pure side-effect import — this is fully backward compatible.
+플러그인이 `init`을 내보내지 않으면 순수한 부수 효과 임포트로 계속 동작하므로, 완전한 하위 호환성이 유지된다.
 
-## Internal Components
+## 내부 컴포넌트
 
-Quartz also has internal components that provide layout utilities. These live in `quartz/components/` and are primarily used for structural purposes:
+Quartz에는 레이아웃 유틸리티를 제공하는 내부 컴포넌트도 있다. 이들은 `quartz/components/`에 있으며 주로 구조적인 용도로 사용된다:
 
-- `Component.Head()` — renders the `<head>` tag
-- `Component.Spacer()` — adds flexible space
-- `Component.Flex()` — flexible layout container
-- `Component.MobileOnly()` — shows component only on mobile
-- `Component.DesktopOnly()` — shows component only on desktop
-- `Component.ConditionalRender()` — conditionally renders based on page data
+- `Component.Head()` — `<head>` 태그를 렌더링한다
+- `Component.Spacer()` — 유연한 공간을 추가한다
+- `Component.Flex()` — 유연한 레이아웃 컨테이너
+- `Component.MobileOnly()` — 모바일에서만 컴포넌트를 표시한다
+- `Component.DesktopOnly()` — 데스크톱에서만 컴포넌트를 표시한다
+- `Component.ConditionalRender()` — 페이지 데이터에 따라 조건부로 렌더링한다
 
-See [[layout-components]] for more details on these utilities.
+이 유틸리티들에 대한 자세한 내용은 [[layout-components|레이아웃 컴포넌트]]를 참고하라.
 
 > [!hint]
-> Look at existing community plugins like [Explorer](https://github.com/quartz-community/explorer) or [Darkmode](https://github.com/quartz-community/darkmode) for real-world examples.
+> 실제 사례를 보려면 [Explorer](https://github.com/quartz-community/explorer)나 [Darkmode](https://github.com/quartz-community/darkmode) 같은 기존 커뮤니티 플러그인을 살펴보라.

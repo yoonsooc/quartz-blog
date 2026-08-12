@@ -1,14 +1,14 @@
 ---
-title: Paths in Quartz
+title: Quartz의 경로
 ---
 
-Paths are pretty complex to reason about because, especially for a static site generator, they can come from so many places.
+경로는 따져보기가 꽤 복잡한데, 특히 정적 사이트 생성기에서는 경로가 아주 많은 곳에서 올 수 있기 때문이다.
 
-A full file path to a piece of content? Also a path. What about a slug for a piece of content? Yet another path.
+콘텐츠 파일의 전체 파일 경로? 이것도 경로다. 콘텐츠의 slug는? 이것 역시 또 다른 경로다.
 
-It would be silly to type these all as `string` and call it a day as it's pretty common to accidentally mistake one type of path for another. Unfortunately, TypeScript does not have [nominal types](https://en.wikipedia.org/wiki/Nominal_type_system) for type aliases meaning even if you made custom types of a server-side slug or a client-slug slug, you can still accidentally assign one to another and TypeScript wouldn't catch it.
+이것들을 전부 `string`으로 타이핑하고 끝내는 것은 어리석은 일인데, 한 종류의 경로를 다른 종류로 실수로 혼동하는 일이 꽤 흔하기 때문이다. 불행히도 TypeScript의 타입 별칭에는 [명목적 타입(nominal type)](https://en.wikipedia.org/wiki/Nominal_type_system)이 없어서, 서버 측 slug와 클라이언트 측 slug를 위한 커스텀 타입을 만들더라도 여전히 실수로 하나를 다른 하나에 할당할 수 있고 TypeScript는 이를 잡아내지 못한다.
 
-Luckily, we can mimic nominal typing using [brands](https://www.typescriptlang.org/play#example/nominal-typing).
+다행히 [브랜드(brand)](https://www.typescriptlang.org/play#example/nominal-typing)를 사용해 명목적 타이핑을 흉내 낼 수 있다.
 
 ```typescript
 // instead of
@@ -21,11 +21,11 @@ type FullSlug = string & { __brand: "full" }
 const slug: FullSlug = "some random string"
 ```
 
-While this prevents most typing mistakes _within_ our nominal typing system (e.g. mistaking a server slug for a client slug), it doesn't prevent us from _accidentally_ mistaking a string for a client slug when we forcibly cast it.
+이렇게 하면 명목적 타이핑 시스템 _안에서의_ 타이핑 실수(예: 서버 slug를 클라이언트 slug로 혼동하는 것)는 대부분 방지되지만, 강제로 캐스팅할 때 문자열을 클라이언트 slug로 _실수로_ 혼동하는 것까지 막아주지는 못한다.
 
-Thus, we still need to be careful when casting from a string to one of these nominal types in the 'entrypoints', illustrated with hexagon shapes in the diagram below.
+따라서 '진입점'에서 문자열을 이러한 명목적 타입 중 하나로 캐스팅할 때는 여전히 주의해야 한다. 진입점은 아래 다이어그램에서 육각형 모양으로 표시되어 있다.
 
-The following diagram draws the relationships between all the path sources, nominal path types, and what functions in `quartz/path.ts` convert between them.
+다음 다이어그램은 모든 경로 출처, 명목적 경로 타입, 그리고 `quartz/path.ts`의 어떤 함수가 이들 사이를 변환하는지의 관계를 그린 것이다.
 
 ```mermaid
 graph LR
@@ -41,11 +41,11 @@ graph LR
     style FullSlug stroke-width:4px
 ```
 
-Here are the main types of slugs with a rough description of each type of path:
+다음은 주요 slug 타입들과 각 경로 타입에 대한 대략적인 설명이다:
 
-- `FilePath`: a real file path to a file on disk. Cannot be relative and must have a file extension.
-- `FullSlug`: cannot be relative and may not have leading or trailing slashes. It can have `index` as it's last segment. Use this wherever possible is it's the most 'general' interpretation of a slug.
-- `SimpleSlug`: cannot be relative and shouldn't have `/index` as an ending or a file extension. It _can_ however have a trailing slash to indicate a folder path.
-- `RelativeURL`: must start with `.` or `..` to indicate it's a relative URL. Shouldn't have `/index` as an ending or a file extension but can contain a trailing slash.
+- `FilePath`: 디스크에 있는 파일의 실제 파일 경로. 상대 경로일 수 없고 파일 확장자가 있어야 한다.
+- `FullSlug`: 상대 경로일 수 없으며 앞뒤에 슬래시가 붙을 수 없다. 마지막 세그먼트로 `index`를 가질 수 있다. slug의 가장 '일반적인' 해석이므로 가능한 한 이것을 사용하라.
+- `SimpleSlug`: 상대 경로일 수 없으며 끝에 `/index`나 파일 확장자가 붙으면 안 된다. 다만 폴더 경로를 나타내기 위해 뒤에 슬래시가 붙을 수는 _있다_.
+- `RelativeURL`: 상대 URL임을 나타내기 위해 반드시 `.` 또는 `..`으로 시작해야 한다. 끝에 `/index`나 파일 확장자가 붙으면 안 되지만 뒤에 슬래시는 포함할 수 있다.
 
-To get a clearer picture of how these relate to each other, take a look at the path tests in `quartz/util/path.test.ts`.
+이들이 서로 어떻게 관련되는지 더 명확히 이해하려면 `quartz/util/path.test.ts`의 경로 테스트를 살펴보라.
