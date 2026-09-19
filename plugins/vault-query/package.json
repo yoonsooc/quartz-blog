@@ -1,20 +1,22 @@
 {
-  "name": "@yoonsooc/dataview-inline",
+  "name": "@yoonsooc/vault-query",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
-    ".": { "import": "./dist/index.js" },
+    ".": {
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
   "quartz": {
-    "name": "dataview-inline",
-    "displayName": "Dataview Inline Expressions",
+    "name": "vault-query",
+    "displayName": "Vault Query (Obsidian Bases + Dataview)",
     "category": "transformer",
     "version": "1.0.0",
     "quartzVersion": ">=5.0.0",
     "dependencies": [],
-    "defaultOrder": 35,
+    "defaultOrder": 3,
     "defaultEnabled": true,
     "defaultOptions": {}
   }

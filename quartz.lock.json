@@ -1,12 +1,6 @@
 {
   "version": "1.0.0",
   "plugins": {
-    "dataview-inline": {
-      "source": "./plugins/dataview-inline",
-      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/dataview-inline",
-      "commit": "local",
-      "installedAt": "2026-07-24T18:48:56.708Z"
-    },
     "hero": {
       "source": "./plugins/hero",
       "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/hero",
@@ -24,6 +18,12 @@
       "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-tabs",
       "commit": "local",
       "installedAt": "2026-07-24T18:48:56.708Z"
+    },
+    "vault-query": {
+      "source": "./plugins/vault-query",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/vault-query",
+      "commit": "local",
+      "installedAt": "2026-09-19T18:25:00.000Z"
     }
   }
 }
