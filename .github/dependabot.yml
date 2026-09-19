@@ -5,11 +5,26 @@ updates:
     schedule:
       interval: "weekly"
     groups:
+      # Separated so a risky third-party major cannot block ecosystem updates.
+      quartz-ecosystem:
+        applies-to: "version-updates"
+        patterns:
+          - "@quartz-community/*"
+          - "@quartz-themes/*"
+      # Isolated because a compiler major needs a tsconfig migration of its own.
+      typescript:
+        applies-to: "version-updates"
+        patterns:
+          - "typescript"
       # major 업데이트는 그룹에서 제외되어 개별 PR로 분리됨 (breaking change 리뷰용)
       production-dependencies:
         applies-to: "version-updates"
         patterns:
           - "*"
+        exclude-patterns:
+          - "@quartz-community/*"
+          - "@quartz-themes/*"
+          - "typescript"
         update-types:
           - "minor"
           - "patch"
