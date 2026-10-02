@@ -1,0 +1,39 @@
+{
+  "name": "@yoonsooc/section-nav",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "section-nav",
+    "displayName": "Section Directory",
+    "category": [
+      "transformer",
+      "component"
+    ],
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "SectionNav": {
+        "displayName": "Section Directory Nav",
+        "defaultPosition": "beforeBody",
+        "defaultPriority": 5
+      }
+    },
+    "defaultOrder": 880
+  }
+}

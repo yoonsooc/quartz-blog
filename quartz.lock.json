@@ -7,6 +7,12 @@
       "commit": "local",
       "installedAt": "2026-07-24T18:48:56.708Z"
     },
+    "section-nav": {
+      "source": "./plugins/section-nav",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-nav",
+      "commit": "local",
+      "installedAt": "2026-10-02T10:08:52.000Z"
+    },
     "section-privacy": {
       "source": "./plugins/section-privacy",
       "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-privacy",

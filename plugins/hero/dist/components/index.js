@@ -110,16 +110,14 @@ export const Hero = (opts) => {
 .hero-title {
   font-family: "DM Serif Display", serif;
   font-weight: 700;
-  font-style: italic;
   letter-spacing: 0.02em;
-  font-size: 2.4rem;
+  font-size: 2rem;
 }
 .hero-title a {
   color: var(--dark);
   text-decoration: none;
   font-family: "DM Serif Display", serif;
   font-weight: 700;
-  font-style: italic;
 }
 .hero-subtitle {
   font-size: 0.9rem;

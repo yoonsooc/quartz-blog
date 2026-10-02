@@ -2,22 +2,25 @@
 // encrypted-pages가 읽는 password frontmatter를 환경변수에서 주입한다.
 // 비밀번호를 vault 노트에 저장하지 않기 위한 어댑터.
 // encrypted-pages(order 900)보다 먼저 실행되어야 한다 (order 890).
+//
+// 섹션 인덱스의 노트 목록(디렉토리)은 section-nav 플러그인이 본문에 넣는다.
+// 본문에 들어가므로 여기서 주입한 비밀번호로 함께 암호화된다.
 
 export const SectionPrivacy = (opts) => {
   const sections = opts?.sections ?? []
   const passwordField = opts?.passwordField ?? "password"
-  const privatePrefixes = sections
-    .filter((s) => s.private && s.prefix !== "")
-    .map((s) => s.prefix)
+  const privateSections = sections.filter((s) => s.private && s.prefix !== "")
 
   return {
     name: "SectionPrivacy",
-    markdownPlugins(ctx) {
+    markdownPlugins() {
       return [
         () => (tree, file) => {
           const slug = file.data.slug ?? ""
-          const isPrivate = privatePrefixes.some((p) => slug === p || slug.startsWith(`${p}/`))
-          if (!isPrivate) return
+          const section = privateSections.find(
+            (s) => slug === s.prefix || slug.startsWith(`${s.prefix}/`),
+          )
+          if (!section) return
 
           const password = process.env.SITE_PRIVATE_PASSWORD ?? process.env.STATICRYPT_PASSWORD
           if (!password) {
@@ -32,44 +35,17 @@ export const SectionPrivacy = (opts) => {
             file.data.frontmatter[passwordField] = password
           }
 
-          // 제목·설명은 암호화 대상 밖(meta 태그, article-title, og-image)에도
-          // 렌더링되므로 슬러그 마지막 조각으로 소독한다. 원 제목은 본문(암호화
-          // 영역)에서만 보이게 된다.
-          const safeTitle = slug.split("/").pop() ?? slug
+          // 제목·설명·태그는 암호화 대상 밖(meta 태그, article-title, tag-list,
+          // og-image)에도 렌더링되므로 소독한다. 원 제목은 본문(암호화 영역)에서만
+          // 보이게 된다. 섹션 인덱스의 제목은 섹션 표시 이름을 쓴다.
+          const isIndex = slug === `${section.prefix}/index` || slug === section.prefix
+          const safeTitle = isIndex ? section.label : (slug.split("/").pop() ?? slug)
           if (file.data.frontmatter.title !== safeTitle) {
             file.data.frontmatter.title = safeTitle
           }
           delete file.data.frontmatter.description
+          delete file.data.frontmatter.tags
           file.data.description = undefined
-
-          // 섹션 인덱스 노트에는 자식 노트 목록을 본문(암호화 영역)에 주입한다.
-          // 자식들은 unlisted라 폴더 자동 목록에 잡히지 않고, 암호화 영역 밖에
-          // 목록을 두면 제목이 평문 유출되기 때문. 잠금 해제 후에만 보인다.
-          const prefix = privatePrefixes.find((p) => slug === `${p}/index` || slug === p)
-          if (prefix) {
-            const children = (ctx?.allSlugs ?? [])
-              .filter((s) => s.startsWith(`${prefix}/`) && s !== `${prefix}/index`)
-              .sort()
-              .reverse()
-            const items = children.map((s) => {
-              const name = s.slice(prefix.length + 1)
-              return {
-                type: "listItem",
-                spread: false,
-                children: [
-                  {
-                    type: "paragraph",
-                    children: [
-                      { type: "link", url: `/${s}`, children: [{ type: "text", value: name }] },
-                    ],
-                  },
-                ],
-              }
-            })
-            if (items.length > 0) {
-              tree.children.push({ type: "list", ordered: false, spread: false, children: items })
-            }
-          }
         },
       ]
     },

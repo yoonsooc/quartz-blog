@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
-# NKNB's Blog — Quartz 5 설정 (v4 quartz.config.ts + quartz.layout.ts에서 이전)
+# YSC's Blog — Quartz 5 설정 (v4 quartz.config.ts + quartz.layout.ts에서 이전)
 configuration:
-  pageTitle: NKNB's Blog
+  pageTitle: YSC's Blog
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
@@ -43,9 +43,38 @@ configuration:
         highlight: rgba(255, 59, 78, 0.12)
         textHighlight: "#ffe06688"
 # 섹션 정의 단일 소스 (앵커로 각 플러그인 options에 공유)
+# 비공개 섹션의 key/prefix는 볼트 폴더 이름(_blog/daily)과 URL이라 그대로 두고
+# 표시 이름(label)만 Private로 쓴다. 폴더를 private로 바꾸면 ignorePatterns의
+# "private"에 걸려 빌드에서 통째로 빠진다.
+#
+# categories: 섹션 인덱스의 디렉토리(section-nav 플러그인).
+#   all      섹션의 모든 노트
+#   tag      노트 frontmatter의 tags에 이 값이 있으면 해당 분류에 넣는다
+#   default  어느 태그 분류에도 들지 않은 노트가 들어가는 분류
+#   fromTags 노트에 쓰인 태그마다 분류를 자동으로 하나씩 만든다. 분류 이름은 암호화
+#            영역 밖에 평문으로 나오므로 비공개 섹션에는 쓰지 않는다.
+#   urlEnv   노트 목록 대신 외부 페이지를 보여 주는 분류. 주소는 저장소에 남지 않게
+#            환경변수(.env)에서 읽고, 값이 없으면 분류 자체를 숨긴다.
+# groupByFolder(섹션 옵션): 분류 안에서 하위 폴더별 소제목으로 한 번 더 묶는다.
+# hideTab(섹션 옵션): 상단 탭에 내놓지 않는다. 주소(/daily)를 직접 입력해 들어간다.
 _sections: &sections
-  - { key: posts, label: Posts, prefix: "" }
-  - { key: daily, label: Daily, prefix: daily, private: true }
+  - key: posts
+    label: Posts
+    prefix: ""
+    categories:
+      - { key: all, label: All, all: true }
+      - { fromTags: true }
+  - key: daily
+    label: Private
+    prefix: daily
+    private: true
+    hideTab: true
+    groupByFolder: true
+    categories:
+      # Daily: 노션으로 옮긴 일일 기록·할 일 뷰. 맨 앞 분류가 기본으로 열린다.
+      - { key: daily, label: Daily, urlEnv: SITE_PRIVATE_NOTION_URL }
+      - { key: apply, label: Apply, tag: apply }
+      - { key: archived, label: Archived, default: true }
 plugins:
   # ---------- local plugins ----------
   - source: "./plugins/section-privacy"
@@ -63,13 +92,25 @@ plugins:
       sections: *sections
       publicPages: warn
     order: 3
+  # 상단 섹션 탭. 탭에 내놓을 섹션이 Posts 하나뿐이라 꺼 두었다. 끄면 상단 바가
+  # 사라지고 검색·다크 모드 버튼만 히어로 위에 남는다(custom.scss). 공개 섹션이
+  # 늘어나면 enabled: true로 되돌린다.
   - source: "./plugins/section-tabs"
-    enabled: true
+    enabled: false
     options:
       sections: *sections
     layout:
       position: left
       priority: 10
+  # 변환기(디렉토리 주입)는 section-privacy(890)·encrypted-pages(900)보다 앞에 둔다
+  - source: "./plugins/section-nav"
+    enabled: true
+    options:
+      sections: *sections
+    order: 880
+    layout:
+      position: beforeBody
+      priority: 5
   - source: "./plugins/hero"
     enabled: true
     options:
@@ -122,6 +163,11 @@ plugins:
     options:
       renderEngine: katex
     order: 80
+  # 옵시디언처럼 문단 안의 줄바꿈 한 번을 실제 줄바꿈(<br>)으로 렌더링한다.
+  # 표준 마크다운은 줄바꿈 한 번을 공백으로 취급한다.
+  - source: "@quartz-community/hard-line-breaks"
+    enabled: true
+    order: 90
   # ---------- filters ----------
   - source: "@quartz-community/remove-draft"
     enabled: true
@@ -147,8 +193,14 @@ plugins:
     enabled: false
   - source: "@quartz-community/content-page"
     enabled: true
+  # 비공개 섹션 인덱스는 folder-page가 그린다. 하위 폴더 목록은 암호화 영역 밖에
+  # 평문으로 나오고(월 폴더 이름 노출) 링크도 404라서 끈다. 목록은 section-privacy가
+  # 암호화 영역 안에 분류별로 넣는다.
   - source: "@quartz-community/folder-page"
     enabled: true
+    options:
+      showFolderCount: false
+      showSubfolders: false
   - source: "@quartz-community/tag-page"
     enabled: true
   - source: "@quartz-community/quartz-fonts"
@@ -237,8 +289,10 @@ plugins:
       position: beforeBody
       priority: 30
       condition: not-index
+  # 글만 고르지 않고 목록에 실릴 수 있는 모든 페이지(첫 화면, 404, 태그 인덱스)를
+  # 나열하고, 이를 뺄 옵션이 없어서 껐다. 글 목록은 section-nav의 분류가 맡는다.
   - source: "@quartz-community/recent-notes"
-    enabled: true
+    enabled: false
     options:
       title: ""
       limit: 100

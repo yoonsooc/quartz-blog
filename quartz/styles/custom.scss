@@ -1,8 +1,8 @@
 @use "./variables.scss" as *;
 
 // ============================================================
-// NKNB's Blog — v4 custom.scss 포팅 (Mirror's Edge 디자인)
-// 레이아웃: 상단 헤더 바 + 중앙 단일 칼럼(800px), 사이드바 없음.
+// YSC's Blog — v4 custom.scss 포팅 (Mirror's Edge 디자인)
+// 레이아웃: (섹션 탭을 켰을 때만) 상단 헤더 바 + 중앙 단일 칼럼(800px).
 // v5 DOM 차이 대응:
 //  - 탭 컴포넌트: .page-title.section-tabs (로컬 section-tabs 플러그인)
 //  - 히어로가 banner 슬롯이 아니라 .page-header(beforeBody) 안에 렌더됨
@@ -54,6 +54,21 @@
   }
 }
 
+// 섹션 탭이 없을 때(section-tabs 플러그인을 끈 상태)는 바를 그리지 않는다.
+// 검색과 다크 모드 버튼만 히어로 오른쪽 위에 겹쳐 두어, 페이지가 히어로부터
+// 시작하게 한다. 탭을 다시 켜면 위의 상단 바 스타일로 돌아간다.
+.page > #quartz-body {
+  position: relative;
+}
+
+.page > #quartz-body .sidebar.left:not(:has(.section-tabs)) {
+  position: absolute;
+  top: 0;
+  right: 1.5rem;
+  z-index: 2;
+  border-bottom: none;
+}
+
 // 섹션 탭은 uppercase 헤더 스타일과 별개로 크기 유지
 .page > #quartz-body .sidebar.left .page-title.section-tabs a {
   font-size: 1.1rem;
@@ -83,6 +98,11 @@
   border-top: 1px solid var(--secondary);
   font-size: 0.8rem;
   color: var(--gray);
+}
+
+// 본문 아래 컴포넌트(afterBody)가 하나도 없으면 빈 영역의 구분선과 여백을 숨긴다
+.page > #quartz-body .page-footer:empty {
+  display: none;
 }
 
 // ===== Hero: page-header 내부에서 full-bleed로 확장 =====

@@ -1,5 +1,7 @@
-// v4 커스텀 PageTitle 포팅: Posts | Daily 섹션 탭 내비게이션.
+// v4 커스텀 PageTitle 포팅: Posts | Private 섹션 탭 내비게이션.
 // 섹션 목록은 플러그인 options.sections (quartz.config.yaml)에서 온다.
+// hideTab: true인 섹션은 탭에 내놓지 않는다(주소를 직접 입력해 들어가는 섹션).
+// 다만 그 섹션 안의 페이지에서는 현재 위치를 알 수 있도록 탭을 보여 준다.
 import { jsx, jsxs, Fragment } from "preact/jsx-runtime"
 
 function pathToRoot(slug) {
@@ -38,9 +40,10 @@ export const SectionTabs = (opts) => {
     const slug = fileData.slug ?? ""
     const baseDir = pathToRoot(slug)
     const activeKey = sectionOf(slug, sections).key
+    const visible = sections.filter((s) => !s.hideTab || s.key === activeKey)
     return jsx("h2", {
       class: `${displayClass ?? ""} page-title section-tabs`.trim(),
-      children: sections.map((s, i) => {
+      children: visible.map((s, i) => {
         const href = s.prefix === "" ? baseDir : joinSegments(baseDir, `${s.prefix}/`)
         const active = activeKey === s.key
         return jsxs(Fragment, {

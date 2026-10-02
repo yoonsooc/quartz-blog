@@ -25,5 +25,5 @@ npx quartz build
 node scripts/scrub-private-assets.mjs
 
 echo
-echo "==> /daily/ requires password from \$SITE_PRIVATE_PASSWORD"
+echo "==> /daily/ (Private) requires password from \$SITE_PRIVATE_PASSWORD"
 exec node "$ROOT/scripts/preview-server.mjs"
