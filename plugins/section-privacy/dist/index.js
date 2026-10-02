@@ -6,6 +6,22 @@
 // 섹션 인덱스의 노트 목록(디렉토리)은 section-nav 플러그인이 본문에 넣는다.
 // 본문에 들어가므로 여기서 주입한 비밀번호로 함께 암호화된다.
 
+// 암호문은 공개 저장소에 그대로 올라가므로 누구나 내려받아 비밀번호를 오프라인에서
+// 무제한으로 대입해 볼 수 있다. 접속 횟수 제한 같은 방어가 없어서 비밀번호의 길이와
+// 무작위성이 유일한 방어선이다. 약해 보이면 빌드할 때마다 알린다.
+let weakPasswordWarned = false
+function warnIfWeak(password) {
+  if (weakPasswordWarned) return
+  const kinds = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter((r) => r.test(password)).length
+  const distinct = new Set(password).size
+  if (password.length >= 16 && distinct >= 10 && kinds >= 2) return
+  weakPasswordWarned = true
+  console.warn(
+    `[section-privacy] SITE_PRIVATE_PASSWORD가 약합니다 (길이 ${password.length}, 서로 다른 문자 ${distinct}개, ` +
+      `문자 종류 ${kinds}가지). 암호문이 공개되므로 16자 이상의 무작위 문자열이나 단어 4개 이상의 문구를 권장합니다.`,
+  )
+}
+
 export const SectionPrivacy = (opts) => {
   const sections = opts?.sections ?? []
   const passwordField = opts?.passwordField ?? "password"
@@ -29,6 +45,8 @@ export const SectionPrivacy = (opts) => {
               `SectionPrivacy: SITE_PRIVATE_PASSWORD is not set but private page "${slug}" exists`,
             )
           }
+
+          warnIfWeak(password)
 
           file.data.frontmatter = file.data.frontmatter ?? {}
           if (file.data.frontmatter[passwordField] === undefined) {

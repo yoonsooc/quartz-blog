@@ -19,9 +19,10 @@
     "test": "tsx --test",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "install-plugins": "npx tsx ./quartz/plugins/loader/install-plugins.ts",
-    "prebuild": "npm run install-plugins",
-    "build": "npx quartz build && node scripts/scrub-private-assets.mjs",
-    "dev": "npm run install-plugins && node --no-deprecation --env-file-if-exists=.env ./quartz/bootstrap-cli.mjs build --serve",
+    "sync": "node --env-file-if-exists=.env scripts/sync-content.mjs",
+    "prebuild": "npm run sync && npm run install-plugins",
+    "build": "node --no-deprecation --env-file-if-exists=.env ./quartz/bootstrap-cli.mjs build && node scripts/scrub-private-assets.mjs",
+    "dev": "npm run sync && npm run install-plugins && node --no-deprecation --env-file-if-exists=.env ./quartz/bootstrap-cli.mjs build --serve",
     "preview:secure": "bash scripts/preview-secure.sh",
     "deploy": "bash scripts/deploy.sh"
   },

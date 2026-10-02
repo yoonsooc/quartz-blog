@@ -17,7 +17,7 @@ import YAML from "yaml"
 
 const frontmatterRegex = /^﻿?---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/
 const warned = new Set()
-let cache = { buildId: undefined, bySection: new Map() }
+let cache = { buildId: undefined, values: new Map() }
 
 // 가장 긴 prefix가 맞는 섹션. 어디에도 속하지 않으면 루트 섹션(prefix "")이다.
 export function sectionOf(slug, sections) {
@@ -58,13 +58,28 @@ function sortableDate(raw) {
 // 여기서 미리 걸러 두지 않으면 게시되지 않는 노트로 가는 죽은 링크가 생긴다.
 const isPublished = (fm) => (fm.publish === true || fm.publish === "true") && fm.draft !== true
 
-function sectionNotes(ctx, section, sections) {
+// frontmatter에 날짜가 없는 노트(위키에서 온 메모에 흔하다)는 파일 수정 시각을 쓴다.
+// created-modified-date 플러그인이 frontmatter 다음에 파일 시각을 보는 것과 같은 순서다.
+function noteDate(frontmatter, absPath) {
+  const fromFrontmatter = sortableDate(
+    frontmatter.date ?? frontmatter.created ?? frontmatter.modified,
+  )
+  if (fromFrontmatter) return fromFrontmatter
+  try {
+    return fs.statSync(absPath).mtime.toISOString()
+  } catch {
+    return ""
+  }
+}
+
+function readSectionNotes(ctx, section, sections) {
   const notes = []
   ctx.allFiles.forEach((filePath, i) => {
     const slug = ctx.allSlugs[i]
     if (!filePath.endsWith(".md") || slug === indexSlug(section)) return
     if (sectionOf(slug, sections) !== section) return
-    const frontmatter = readFrontmatter(path.join(ctx.argv.directory, filePath))
+    const absPath = path.join(ctx.argv.directory, filePath)
+    const frontmatter = readFrontmatter(absPath)
     if (!isPublished(frontmatter)) return
     const parts = (section.prefix === "" ? slug : slug.slice(section.prefix.length + 1)).split("/")
     const name = parts[parts.length - 1]
@@ -72,13 +87,34 @@ function sectionNotes(ctx, section, sections) {
       slug,
       name,
       // 비공개 섹션의 제목은 파일 이름으로 통일한다 (section-privacy의 소독 규칙과 같다)
-      title: section.private ? name : String(frontmatter.title ?? name),
+      title: section.private
+        ? name
+        : String(frontmatter.title ?? path.basename(filePath, ".md").normalize("NFC")),
       folder: parts.slice(0, -1).join("/"),
       tags: tagsOf(frontmatter),
-      date: sortableDate(frontmatter.date),
+      date: noteDate(frontmatter, absPath),
     })
   })
   return notes
+}
+
+// 컴포넌트는 페이지마다 호출되므로 빌드 1회 동안은 결과를 재사용한다
+function memo(ctx, key, compute) {
+  if (cache.buildId !== ctx.buildId) cache = { buildId: ctx.buildId, values: new Map() }
+  if (!cache.values.has(key)) cache.values.set(key, compute())
+  return cache.values.get(key)
+}
+
+const sectionNotes = (ctx, section, sections) =>
+  memo(ctx, `notes:${section.key}`, () => readSectionNotes(ctx, section, sections))
+
+// 섹션의 노트를 최신순으로 돌려준다 (내비게이션의 "최근 글" 목록용)
+export function recentNotes(ctx, section, sections) {
+  return memo(ctx, `recent:${section.key}`, () =>
+    [...sectionNotes(ctx, section, sections)].sort(
+      (a, b) => b.date.localeCompare(a.date) || b.name.localeCompare(a.name),
+    ),
+  )
 }
 
 function expandCategories(section, notes) {
@@ -129,13 +165,8 @@ function resolve(ctx, section, sections) {
   }))
 }
 
-// 페이지마다 호출되므로 빌드 1회 동안은 결과를 재사용한다
 export function resolveCategories(ctx, section, sections) {
-  if (cache.buildId !== ctx.buildId) cache = { buildId: ctx.buildId, bySection: new Map() }
-  if (!cache.bySection.has(section.key)) {
-    cache.bySection.set(section.key, resolve(ctx, section, sections))
-  }
-  return cache.bySection.get(section.key)
+  return memo(ctx, `categories:${section.key}`, () => resolve(ctx, section, sections))
 }
 
 // 분류를 정의하지 않은 섹션의 노트 전체 (비공개 섹션의 묶지 않은 목록용)

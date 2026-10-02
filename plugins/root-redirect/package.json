@@ -1,0 +1,22 @@
+{
+  "name": "@yoonsooc/root-redirect",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "quartz": {
+    "name": "root-redirect",
+    "displayName": "Root Redirect",
+    "category": "emitter",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

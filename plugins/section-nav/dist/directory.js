@@ -98,5 +98,21 @@ export const SectionDirectory = (opts) => {
         },
       ]
     },
+    // 섹션 인덱스는 분류 목록 때문에 섹션의 모든 노트를 링크한다. 그대로 두면 모든
+    // 노트의 백링크에 인덱스가 끼어들므로, 인덱스에서 같은 섹션 노트로 가는 링크는
+    // 나가는 링크 목록(crawl-links가 채운 file.data.links)에서 뺀다.
+    htmlPlugins() {
+      return [
+        () => (_tree, file) => {
+          const slug = file.data.slug ?? ""
+          const section = sections.find((s) => slug === indexSlug(s))
+          if (!section || !Array.isArray(file.data.links)) return
+          if (!section.categories?.length && !section.private) return // 디렉토리가 없는 섹션
+          const inside = (link) =>
+            section.prefix === "" ? link !== "/" : link.startsWith(`${section.prefix}/`)
+          file.data.links = file.data.links.filter((link) => !inside(link))
+        },
+      ]
+    },
   }
 }

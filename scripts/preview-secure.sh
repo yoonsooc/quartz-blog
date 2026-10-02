@@ -20,6 +20,7 @@ if [ -z "$SITE_PRIVATE_PASSWORD" ]; then
 fi
 
 cd "$ROOT"
+node scripts/sync-content.mjs
 npm run install-plugins
 npx quartz build
 node scripts/scrub-private-assets.mjs

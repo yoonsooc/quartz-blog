@@ -1,13 +1,19 @@
-// 섹션 디렉토리 내비게이션: sections 옵션의 categories를 분류 목록으로 보여 준다.
-// 넓은 화면에서는 본문 왼쪽 여백에 세로 목록으로, 좁은 화면에서는 본문 위 가로
-// 탭으로 나온다. 분류에 속한 노트 목록은 변환기(../directory.js)가 섹션 인덱스
-// 본문에 <section class="section-group" data-category="키">로 넣는다.
+// 왼쪽 내비게이션. 왼쪽 칼럼에서 사이트 제목과 검색 아래에 놓인다. 좁은 화면에서는
+// 본문 위 가로 한 줄로 나온다. 페이지가 속한 섹션에 따라 두 가지 모양 중 하나를 그린다.
 //
-// 이 컴포넌트는 암호화 영역 밖에 평문으로 렌더링된다. 그래서 분류 이름만 다루고,
-// 노트 제목이나 외부 주소처럼 숨겨야 하는 값은 여기에 넣지 않는다. 같은 이유로
-// 비공개 섹션에는 { fromTags: true }를 쓰지 않는 편이 안전하다(태그 이름이 드러난다).
-import { jsx } from "preact/jsx-runtime"
-import { resolveCategories, sectionOf } from "../sections.js"
+// 1) 최근 글 (기본): sections 옵션에서 nav를 준 섹션마다 묶음을 하나씩 만든다.
+//      nav: { title: "Writing", limit: 4 }
+//    묶음에는 제목(섹션 인덱스로 가는 링크), 최근 노트 limit개, "See N more →"가 들어간다.
+//
+// 2) 분류 목록: categories를 정의한 섹션(비공개 섹션)의 페이지에서는 분류 이름만 나열한다.
+//    분류에 속한 노트 목록은 변환기(../directory.js)가 섹션 인덱스 본문에
+//    <section class="section-group" data-category="키">로 넣는다.
+//
+// 이 컴포넌트는 암호화 영역 밖에 평문으로 렌더링된다. 그래서 비공개 섹션에서는 분류
+// 이름만 다루고, 노트 제목이나 외부 주소처럼 숨겨야 하는 값은 넣지 않는다. 최근 글
+// 묶음도 비공개 섹션(private: true)은 만들지 않는다.
+import { jsx, jsxs } from "preact/jsx-runtime"
+import { recentNotes, resolveCategories, sectionOf } from "../sections.js"
 
 function pathToRoot(slug) {
   const rootPath = slug
@@ -19,33 +25,96 @@ function pathToRoot(slug) {
   return rootPath.length === 0 ? "." : rootPath
 }
 
+// Quartz의 목록(folder-page, content-meta)과 같은 표기: 빌드하는 컴퓨터의 현지 시간 기준
+const formatDate = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "2-digit" })
+    : ""
+
+function categoryNav(section, categories, root, displayClass) {
+  const indexHref = `${root}/${section.prefix}/`
+  return jsx("nav", {
+    class: `${displayClass ?? ""} section-nav section-nav-categories`.trim(),
+    "aria-label": section.label,
+    children: jsx("ul", {
+      children: categories.map((c) =>
+        jsx("li", {
+          children: jsx("a", {
+            href: `${indexHref}#${encodeURIComponent(c.key)}`,
+            "data-category": c.key,
+            // 비공개 섹션은 SPA 전환 대신 전체 로드를 써야 잠금 해제 흐름이 유지된다
+            ...(section.private ? { "data-router-ignore": true } : {}),
+            children: c.label,
+          }),
+        }),
+      ),
+    }),
+  })
+}
+
+function recentNav(blocks, slug, root, displayClass) {
+  return jsx("nav", {
+    class: `${displayClass ?? ""} section-nav section-nav-recent`.trim(),
+    "aria-label": "Recent",
+    children: blocks.map(({ section, notes }) => {
+      const indexHref = `${root}/${section.prefix}/`
+      const limit = section.nav.limit ?? 4
+      const remaining = notes.length - limit
+      return jsxs("div", {
+        class: "section-nav-block",
+        children: [
+          jsx("h3", {
+            children: jsx("a", {
+              href: indexHref,
+              class: slug === `${section.prefix}/index` ? "active" : undefined,
+              children: section.nav.title ?? section.label,
+            }),
+          }),
+          jsx("ul", {
+            children: notes.slice(0, limit).map((n) =>
+              jsx("li", {
+                children: jsxs("a", {
+                  href: `${root}/${n.slug}`,
+                  class: n.slug === slug ? "active" : undefined,
+                  "aria-current": n.slug === slug ? "page" : undefined,
+                  children: [
+                    jsx("span", { class: "section-nav-title", children: n.title }),
+                    n.date && jsx("time", { datetime: n.date, children: formatDate(n.date) }),
+                  ],
+                }),
+              }),
+            ),
+          }),
+          remaining > 0 &&
+            jsx("a", {
+              href: indexHref,
+              class: "section-nav-more",
+              children: `See ${remaining} more →`,
+            }),
+        ],
+      })
+    }),
+  })
+}
+
 export const SectionNav = (opts) => {
   const sections = opts?.sections ?? []
 
   const Component = ({ ctx, fileData, displayClass }) => {
     const slug = fileData.slug ?? ""
+    const root = pathToRoot(slug)
     const section = sectionOf(slug, sections)
-    const categories = section ? resolveCategories(ctx, section, sections) : []
-    if (categories.length === 0) return null
 
-    const indexHref = [pathToRoot(slug), section.prefix].filter((s) => s !== "").join("/") + "/"
-    return jsx("nav", {
-      class: `${displayClass ?? ""} section-nav`.trim(),
-      "aria-label": section.label,
-      children: jsx("ul", {
-        children: categories.map((c) =>
-          jsx("li", {
-            children: jsx("a", {
-              href: `${indexHref}#${encodeURIComponent(c.key)}`,
-              "data-category": c.key,
-              // 비공개 섹션은 SPA 전환 대신 전체 로드를 써야 잠금 해제 흐름이 유지된다
-              ...(section.private ? { "data-router-ignore": true } : {}),
-              children: c.label,
-            }),
-          }),
-        ),
-      }),
-    })
+    if (section?.categories?.length) {
+      const categories = resolveCategories(ctx, section, sections)
+      return categories.length > 0 ? categoryNav(section, categories, root, displayClass) : null
+    }
+
+    const blocks = sections
+      .filter((s) => s.nav && !s.private)
+      .map((s) => ({ section: s, notes: recentNotes(ctx, s, sections) }))
+      .filter((b) => b.notes.length > 0)
+    return blocks.length > 0 ? recentNav(blocks, slug, root, displayClass) : null
   }
 
   // 섹션 인덱스에서는 주소의 #분류에 해당하는 묶음만 보여 준다. 비공개 섹션의 묶음은
@@ -87,33 +156,73 @@ export const SectionNav = (opts) => {
   `
 
   Component.css = `
+/* 이 컴포넌트는 왼쪽 칼럼(.sidebar.left) 안에 놓인다. 800px 이상에서는 칼럼이 세로로
+   서고, 그 미만에서는 본문 위의 가로 줄이 된다(Quartz 기본 그리드). */
 .section-nav ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.25rem;
-}
-.section-nav {
-  margin: 1rem 0 0;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--lightgray);
 }
 .section-nav a {
-  display: block;
   color: var(--darkgray);
   text-decoration: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+.section-nav a.active { color: var(--secondary); }
+
+/* ---------- 분류 목록 ---------- */
+.section-nav-categories a {
+  display: block;
+  padding: 0.3rem 0.7rem;
+  border-left: 2px solid var(--lightgray);
   font-size: 0.95rem;
   font-weight: 600;
   opacity: 0.55;
-  transition: opacity 0.15s ease, color 0.15s ease;
 }
-.section-nav a:hover { opacity: 1; }
-.section-nav a.active {
-  opacity: 1;
-  color: var(--secondary);
+.section-nav-categories a:hover,
+.section-nav-categories a.active { opacity: 1; }
+.section-nav-categories a.active { border-left-color: var(--secondary); }
+
+/* ---------- 최근 글 ---------- */
+.section-nav-block + .section-nav-block { margin-top: 1.8rem; }
+.section-nav-recent h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  /* 사이트 전역의 h3 스타일(대문자·자간)을 따르지 않고 적은 그대로 보여 준다 */
+  text-transform: none;
+  letter-spacing: normal;
 }
+.section-nav-recent h3 a { color: var(--dark); }
+.section-nav-recent h3 a:hover,
+.section-nav-recent h3 a.active { color: var(--secondary); }
+.section-nav-recent ul { margin-top: 0.7rem; }
+.section-nav-recent li + li { margin-top: 0.9rem; }
+.section-nav-recent li a { display: block; }
+.section-nav-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--dark);
+}
+.section-nav-recent li a:hover .section-nav-title,
+.section-nav-recent a.active .section-nav-title { color: var(--secondary); }
+.section-nav-recent time {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  color: var(--gray);
+}
+.section-nav-recent .section-nav-more {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+.section-nav-recent .section-nav-more:hover { color: var(--secondary); }
+
+/* ---------- 분류별 노트 목록(섹션 인덱스 본문) ---------- */
 .section-group > h2:first-child { margin-top: 1rem; }
 .section-date {
   margin-left: 0.7rem;
@@ -126,24 +235,31 @@ export const SectionNav = (opts) => {
   border: 1px solid var(--lightgray);
   border-radius: 6px;
 }
-/* 본문(800px) 왼쪽에 12rem 여백이 생기는 너비부터 세로 사이드바로 바꾼다 */
-@media (min-width: 1240px) {
+
+/* ---------- 좁은 화면: 한 줄로, 최근 글은 묶음 제목만 ---------- */
+@media (max-width: 800px) {
   .section-nav {
-    float: left;
-    width: 10rem;
-    margin: 1.6rem 0 0 -12rem;
+    flex: 1 0 100%;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--lightgray);
+  }
+  .section-nav-categories ul,
+  .section-nav-recent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+  }
+  .section-nav-categories a {
     padding: 0;
-    border-bottom: none;
+    border-left: none;
   }
-  .section-nav ul {
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-  .section-nav a {
-    padding: 0.3rem 0.7rem;
-    border-left: 2px solid var(--lightgray);
-  }
-  .section-nav a.active { border-left-color: var(--secondary); }
+  .section-nav-block + .section-nav-block { margin-top: 0; }
+  .section-nav-recent h3 { font-size: 0.95rem; font-weight: 600; }
+  .section-nav-recent h3 a { color: var(--darkgray); opacity: 0.55; }
+  .section-nav-recent h3 a:hover,
+  .section-nav-recent h3 a.active { opacity: 1; }
+  .section-nav-recent ul,
+  .section-nav-recent .section-nav-more { display: none; }
 }
 `
 

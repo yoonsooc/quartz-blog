@@ -1,12 +1,13 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
-# YSC's Blog — Quartz 5 설정 (v4 quartz.config.ts + quartz.layout.ts에서 이전)
+# YSC's Garden — Quartz 5 설정 (v4 quartz.config.ts + quartz.layout.ts에서 이전)
 configuration:
-  pageTitle: YSC's Blog
+  pageTitle: YSC's Garden
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
-  analytics:
-    provider: plausible
+  # 방문 분석을 쓰지 않는다. Quartz 기본값(plausible)은 계정이 없어도 모든 페이지에서
+  # plausible.io로 방문 기록을 보낸다.
+  analytics: null
   locale: en-US
   baseUrl: yoonsooc.github.io
   ignorePatterns:
@@ -42,12 +43,32 @@ configuration:
         tertiary: "#4da8ff"
         highlight: rgba(255, 59, 78, 0.12)
         textHighlight: "#ffe06688"
+# 게시 대상 수집 규칙 (scripts/sync-content.mjs가 읽는다).
+# 볼트 전체에서 publish: true인 노트와 그 노트가 참조하는 첨부만 모아 content를 만든다.
+#   routes   볼트 경로(from) → 사이트 경로(to). 위에서부터 처음 맞는 규칙을 쓴다.
+#            flatten: true면 볼트의 폴더 구조를 버리고 파일 이름만 쓴다
+#            (예: "200. Area/x/메모.md" → /thoughts/메모). 내부 폴더 이름이 주소에
+#            드러나지 않고, 섹션 인덱스의 전체 목록에 모든 노트가 한 번에 나온다
+#            (folder-page는 하위 폴더 안의 노트를 상위 목록에 싣지 않는다).
+#   exclude  publish: true가 있어도 게시하지 않는 볼트 폴더
+_publish:
+  exclude: [templates]
+  attachments: attachments
+  routes:
+    - { from: "_blog/daily", to: daily }
+    - { from: "_blog", to: posts, flatten: true }
+    - { from: "", to: thoughts, flatten: true }
 # 섹션 정의 단일 소스 (앵커로 각 플러그인 options에 공유)
 # 비공개 섹션의 key/prefix는 볼트 폴더 이름(_blog/daily)과 URL이라 그대로 두고
 # 표시 이름(label)만 Private로 쓴다. 폴더를 private로 바꾸면 ignorePatterns의
 # "private"에 걸려 빌드에서 통째로 빠진다.
 #
-# categories: 섹션 인덱스의 디렉토리(section-nav 플러그인).
+# nav: 왼쪽 내비게이션에 "최근 글" 묶음으로 내놓는다(section-nav 플러그인).
+#   title  묶음 제목
+#   limit  보여 줄 최근 노트 수. 넘치면 "See N more →"로 섹션 인덱스에 연결한다.
+#   전체 목록은 섹션 인덱스(/posts, /thoughts)에서 folder-page가 그린다.
+# categories: 섹션 인덱스 본문에 넣는 분류별 디렉토리. 정의하면 그 섹션의 페이지에서는
+#   왼쪽 내비게이션이 최근 글 대신 분류 이름을 보여 준다. 지금은 Private만 쓴다.
 #   all      섹션의 모든 노트
 #   tag      노트 frontmatter의 tags에 이 값이 있으면 해당 분류에 넣는다
 #   default  어느 태그 분류에도 들지 않은 노트가 들어가는 분류
@@ -57,13 +78,18 @@ configuration:
 #            환경변수(.env)에서 읽고, 값이 없으면 분류 자체를 숨긴다.
 # groupByFolder(섹션 옵션): 분류 안에서 하위 폴더별 소제목으로 한 번 더 묶는다.
 # hideTab(섹션 옵션): 상단 탭에 내놓지 않는다. 주소(/daily)를 직접 입력해 들어간다.
+#
+# Posts는 완성된 형태의 글(볼트의 _blog)이고, Thoughts는 그 외 폴더의 노트 중
+# publish: true를 붙인 것(아직 다듬는 중인 메모)이다.
 _sections: &sections
   - key: posts
-    label: Posts
-    prefix: ""
-    categories:
-      - { key: all, label: All, all: true }
-      - { fromTags: true }
+    label: All Posts
+    prefix: posts
+    nav: { title: Writings, limit: 4 }
+  - key: thoughts
+    label: Notes
+    prefix: thoughts
+    nav: { title: Notes, limit: 4 }
   - key: daily
     label: Private
     prefix: daily
@@ -92,9 +118,7 @@ plugins:
       sections: *sections
       publicPages: warn
     order: 3
-  # 상단 섹션 탭. 탭에 내놓을 섹션이 Posts 하나뿐이라 꺼 두었다. 끄면 상단 바가
-  # 사라지고 검색·다크 모드 버튼만 히어로 위에 남는다(custom.scss). 공개 섹션이
-  # 늘어나면 enabled: true로 되돌린다.
+  # 섹션 탭. 섹션은 왼쪽 내비게이션(section-nav)으로 드러내므로 꺼 두었다.
   - source: "./plugins/section-tabs"
     enabled: false
     options:
@@ -109,16 +133,16 @@ plugins:
       sections: *sections
     order: 880
     layout:
-      position: beforeBody
-      priority: 5
+      position: left
+      priority: 40
   - source: "./plugins/hero"
     enabled: true
     options:
-      image: static/bg-city.png
       subtitle: "notes on engineering, and thoughts"
       sections: *sections
+      home: posts
     layout:
-      position: beforeBody
+      position: left
       priority: 1
   # ---------- transformers ----------
   - source: "@quartz-community/created-modified-date"
@@ -154,7 +178,13 @@ plugins:
     enabled: true
     options:
       markdownLinkResolution: shortest
+      # 게시되지 않은 노트로 가는 위키링크에 표식을 붙인다. 표식이 붙은 링크는 바로
+      # 아래의 unpublished-links가 일반 텍스트로 바꾼다.
+      disableBrokenWikilinks: true
     order: 60
+  - source: "./plugins/unpublished-links"
+    enabled: true
+    order: 65
   - source: "@quartz-community/description"
     enabled: true
     order: 70
@@ -176,6 +206,11 @@ plugins:
   # ---------- emitters / misc ----------
   - source: "@quartz-community/alias-redirects"
     enabled: true
+  # 첫 화면(/)은 /posts로 보낸다
+  - source: "./plugins/root-redirect"
+    enabled: true
+    options:
+      to: posts
   - source: "@quartz-community/content-index"
     enabled: true
     options:
@@ -199,7 +234,9 @@ plugins:
   - source: "@quartz-community/folder-page"
     enabled: true
     options:
-      showFolderCount: false
+      # 제목 아래의 "N items under this folder." 한 줄. 항목이 없는 목록(비공개 섹션)
+      # 에서는 custom.scss가 목록 영역을 통째로 숨긴다.
+      showFolderCount: true
       showSubfolders: false
   - source: "@quartz-community/tag-page"
     enabled: true
@@ -227,8 +264,14 @@ plugins:
     enabled: false
   - source: "@quartz-community/graph"
     enabled: false
+  # 이 노트를 링크한 다른 노트 목록. 목록에서 제외된(비공개) 노트는 나오지 않는다.
   - source: "@quartz-community/backlinks"
-    enabled: false
+    enabled: true
+    options:
+      hideWhenEmpty: true
+    layout:
+      position: afterBody
+      priority: 10
   - source: "@quartz-community/breadcrumbs"
     enabled: false
   - source: "@quartz-community/reader-mode"

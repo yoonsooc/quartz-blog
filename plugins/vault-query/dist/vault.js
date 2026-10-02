@@ -144,13 +144,16 @@ export class Vault {
     return page
   }
 
-  // 게시 대상(content 안 + publish: true)일 때만 content 기준 링크 경로를 돌려준다.
-  // 그 외 노트는 링크를 걸면 깨지고 경로도 노출되므로 표시 텍스트만 쓴다.
+  // 게시되는 노트(publish: true)일 때만 위키링크 대상을 돌려준다. 그 외 노트는 링크를
+  // 걸면 깨지고 경로도 노출되므로 표시 텍스트만 쓴다.
+  // content가 수집 폴더(scripts/sync-content.mjs)일 때는 게시 노트가 볼트에 있고
+  // content에는 링크만 있으므로, 경로 대신 파일 이름으로 링크한다. 위키링크는 이름만
+  // 으로도 대상을 찾는다(crawl-links의 shortest).
   publishedLinkTarget(entry) {
-    const rel = path.relative(this.contentRoot, fs.realpathSync(entry.abs))
-    if (rel.startsWith("..") || path.isAbsolute(rel)) return undefined
     const page = this.load(entry)
     if (page?.frontmatter.publish !== true && page?.frontmatter.publish !== "true") return undefined
+    const rel = path.relative(this.contentRoot, fs.realpathSync(entry.abs))
+    if (rel.startsWith("..") || path.isAbsolute(rel)) return entry.basename
     return nfc(rel.split(path.sep).join("/")).replace(/\.md$/, "")
   }
 }

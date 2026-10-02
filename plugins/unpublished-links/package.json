@@ -1,0 +1,23 @@
+{
+  "name": "@yoonsooc/unpublished-links",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "quartz": {
+    "name": "unpublished-links",
+    "displayName": "Unpublished Links as Text",
+    "category": "transformer",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 65,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

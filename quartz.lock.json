@@ -7,6 +7,12 @@
       "commit": "local",
       "installedAt": "2026-07-24T18:48:56.708Z"
     },
+    "root-redirect": {
+      "source": "./plugins/root-redirect",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/root-redirect",
+      "commit": "local",
+      "installedAt": "2026-10-02T16:03:27.000Z"
+    },
     "section-nav": {
       "source": "./plugins/section-nav",
       "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-nav",
@@ -24,6 +30,12 @@
       "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/section-tabs",
       "commit": "local",
       "installedAt": "2026-07-24T18:48:56.708Z"
+    },
+    "unpublished-links": {
+      "source": "./plugins/unpublished-links",
+      "resolved": "/Users/yoonsoochang/Documents/Projects/quartz-blog/plugins/unpublished-links",
+      "commit": "local",
+      "installedAt": "2026-10-02T16:05:27.000Z"
     },
     "vault-query": {
       "source": "./plugins/vault-query",

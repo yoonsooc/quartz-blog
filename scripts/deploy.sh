@@ -32,6 +32,7 @@ fi
 log "Building Quartz site"
 cd "$ROOT"
 export SITE_PRIVATE_PASSWORD="${SITE_PRIVATE_PASSWORD:-${STATICRYPT_PASSWORD:-}}"
+node scripts/sync-content.mjs
 npm run install-plugins
 npx quartz build
 

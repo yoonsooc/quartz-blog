@@ -1,7 +1,9 @@
 // v4 커스텀 PageTitle 포팅: Posts | Private 섹션 탭 내비게이션.
 // 섹션 목록은 플러그인 options.sections (quartz.config.yaml)에서 온다.
+// 노트가 있는 공개 섹션이 둘 이상일 때만 그린다. 하나뿐이면 고를 것이 없으므로
+// 아무것도 그리지 않고, 그러면 상단 바도 생기지 않는다(custom.scss).
 // hideTab: true인 섹션은 탭에 내놓지 않는다(주소를 직접 입력해 들어가는 섹션).
-// 다만 그 섹션 안의 페이지에서는 현재 위치를 알 수 있도록 탭을 보여 준다.
+// 다만 탭이 그려지는 상태에서 그 섹션 안의 페이지라면 현재 위치로 보여 준다.
 import { jsx, jsxs, Fragment } from "preact/jsx-runtime"
 
 function pathToRoot(slug) {
@@ -36,11 +38,15 @@ export const SectionTabs = (opts) => {
   const sections = opts?.sections ?? []
   const privatePrefixes = sections.filter((s) => s.private && s.prefix !== "").map((s) => s.prefix)
 
-  const Component = ({ fileData, displayClass }) => {
+  const Component = ({ ctx, fileData, displayClass }) => {
     const slug = fileData.slug ?? ""
     const baseDir = pathToRoot(slug)
     const activeKey = sectionOf(slug, sections).key
-    const visible = sections.filter((s) => !s.hideTab || s.key === activeKey)
+    const hasPages = (s) =>
+      s.prefix === "" || ctx.allSlugs.some((x) => x === s.prefix || x.startsWith(`${s.prefix}/`))
+    const listed = sections.filter((s) => !s.hideTab && hasPages(s))
+    if (listed.length < 2) return null
+    const visible = sections.filter((s) => listed.includes(s) || (s.hideTab && s.key === activeKey))
     return jsx("h2", {
       class: `${displayClass ?? ""} page-title section-tabs`.trim(),
       children: visible.map((s, i) => {

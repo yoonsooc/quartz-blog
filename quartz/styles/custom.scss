@@ -1,13 +1,10 @@
+@use "sass:map";
 @use "./variables.scss" as *;
 
 // ============================================================
-// YSC's Blog — v4 custom.scss 포팅 (Mirror's Edge 디자인)
-// 레이아웃: (섹션 탭을 켰을 때만) 상단 헤더 바 + 중앙 단일 칼럼(800px).
-// v5 DOM 차이 대응:
-//  - 탭 컴포넌트: .page-title.section-tabs (로컬 section-tabs 플러그인)
-//  - 히어로가 banner 슬롯이 아니라 .page-header(beforeBody) 안에 렌더됨
-//    → full-bleed(100vw)로 빼내고, index에서 page-header를 숨기지 않는다
-//  - 검색+다크모드는 toolbar group(.flex-component)으로 렌더됨
+// YSC's Garden — Mirror's Edge 디자인
+// 레이아웃: 왼쪽 칼럼(사이트 제목 · 검색 · 내비게이션) + 본문.
+// 모든 페이지가 같은 구성이라 목록과 글을 오갈 때 화면이 바뀌지 않는다.
 // ============================================================
 
 :root {
@@ -15,84 +12,79 @@
   --bodyFont: "Inter", "Pretendard Variable", sans-serif;
 }
 
-// ===== Layout: 단일 칼럼 =====
+// ===== Layout: Quartz 기본 그리드 (3칼럼) =====
+// 왼쪽 칼럼(.sidebar.left, 320px)에 hero, 검색·다크 모드, section-nav가 세로로 놓이고
+// 스크롤해도 제자리에 머문다. 가운데가 본문이고, 오른쪽 칼럼(320px)은 그래프나 목차를
+// 넣을 자리로 비워 둔다. 1200px 미만에서는 오른쪽 칼럼이 본문 아래로 내려가고,
+// 800px 미만에서는 왼쪽 칼럼이 본문 위의 가로 줄로 바뀐다(모두 Quartz 기본 동작).
+// 그리드 자체는 건드리지 않고 전체 폭만 정한다.
 
-.page > #quartz-body {
-  max-width: 800px;
-  margin: 0 auto;
-  display: block;
-  padding: 0 1.5rem;
+// 전체 폭. 화면이 이보다 넓으면 가운데에 놓이고, 좁으면 왼쪽 칼럼이 화면 왼쪽 끝에서
+// 시작한다. 1400px은 jzhao.xyz와 같은 값이고(본문 약 750px), Quartz 5의 기본값은
+// 1500px이다. 값을 줄이면 왼쪽 칼럼이 화면 안쪽(오른쪽)으로 들어온다.
+.page {
+  max-width: 1400px;
 }
 
-// 상단 바: 좌측 사이드바를 가로 헤더로 변환
-.page > #quartz-body .sidebar.left {
-  position: initial;
-  height: unset;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.8rem 0;
-  gap: 1rem;
-  border-bottom: 1px solid var(--secondary);
-  margin-bottom: 0;
+// html의 폭은 Quartz 기본값(width: 100vw + overflow-x: hidden)을 그대로 둔다.
+// 세로 스크롤바가 있는 긴 페이지와 없는 짧은 페이지의 레이아웃 폭을 같게 해서,
+// 페이지를 오갈 때 본문이 좌우로 흔들리거나 폭이 달라지지 않게 하는 장치다.
+
+// ===== 사이트 배경 =====
+// 도시 그림을 화면 전체에 옅게 깔고 스크롤해도 고정한다. 글이 놓이는 아래쪽은 더
+// 옅어지도록 위에서 아래로 흐려지게 했다. 경로는 이 스타일시트(사이트 루트의
+// index.css) 기준이라 페이지 깊이와 무관하다.
+body::before {
+  content: "";
+  position: fixed;
+  // inset: 0은 세로 스크롤바를 뺀 영역이라, 스크롤바가 있는 긴 페이지에서는 그 폭만큼
+  // 좁아지고 그림의 확대 비율과 중심이 달라진다. 페이지를 오갈 때 배경이 움직이지
+  // 않도록 스크롤바와 무관한 화면 전체 폭(100vw)에 맞춘다.
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  z-index: -1;
+  background: url("static/bg-city.png") center top / cover no-repeat;
+  opacity: 0.14;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.2) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0.2) 100%);
+  pointer-events: none;
 }
 
-.page > #quartz-body .sidebar.left .page-title {
-  flex: 1;
-  margin: 0;
+:root[saved-theme="dark"] body::before {
+  opacity: 0.09;
+}
 
-  a {
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    font-size: 1.1rem;
-    color: var(--dark);
+.page>#quartz-body .sidebar.left {
+  // 최근 글이 길어져 화면 높이를 넘으면 칼럼 안에서 스크롤한다
+  overflow-y: auto;
+  scrollbar-width: none;
 
-    &:hover {
-      color: var(--dark);
-    }
+  @media all and ($mobile) {
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+    overflow: visible;
   }
 }
 
-// 섹션 탭이 없을 때(section-tabs 플러그인을 끈 상태)는 바를 그리지 않는다.
-// 검색과 다크 모드 버튼만 히어로 오른쪽 위에 겹쳐 두어, 페이지가 히어로부터
-// 시작하게 한다. 탭을 다시 켜면 위의 상단 바 스타일로 돌아간다.
-.page > #quartz-body {
-  position: relative;
-}
-
-.page > #quartz-body .sidebar.left:not(:has(.section-tabs)) {
-  position: absolute;
-  top: 0;
-  right: 1.5rem;
-  z-index: 2;
-  border-bottom: none;
-}
-
-// 섹션 탭은 uppercase 헤더 스타일과 별개로 크기 유지
-.page > #quartz-body .sidebar.left .page-title.section-tabs a {
-  font-size: 1.1rem;
-}
-
-.page > #quartz-body .sidebar.left .flex-component {
+.page>#quartz-body .sidebar.left .flex-component {
   gap: 0.5rem;
 }
 
-.page > #quartz-body .sidebar.right {
-  display: none;
+// 왼쪽 내비게이션의 묶음 제목(Writings, Notes)은 아래의 전역 h3 스타일(대문자, 자간,
+// 강조색)을 따르지 않고 적은 그대로 보여 준다. 컴포넌트 스타일은 Quartz가 낮은
+// 우선순위 층(@layer quartz-base)에 넣으므로 이 파일에서 풀어 줘야 한다.
+.section-nav h3 {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
 }
 
-.page > #quartz-body .sidebar {
-  position: initial;
-  height: unset;
-}
-
-.page-header {
-  margin: 0;
-}
-
-.page > #quartz-body footer,
-.page > #quartz-body .page-footer {
+.page>#quartz-body footer,
+.page>#quartz-body .page-footer {
   margin-top: 3rem;
   padding: 1.5rem 0;
   border-top: 1px solid var(--secondary);
@@ -100,33 +92,51 @@
   color: var(--gray);
 }
 
-// 본문 아래 컴포넌트(afterBody)가 하나도 없으면 빈 영역의 구분선과 여백을 숨긴다
-.page > #quartz-body .page-footer:empty {
+// ===== 섹션 인덱스(/posts, /thoughts): 제목 → 항목 수 → 목록 =====
+
+// 글이 아니라 목록 페이지라서 날짜·읽는 시간을 표시하지 않는다
+body[data-slug$="/index"] .content-meta {
   display: none;
 }
 
-// ===== Hero: page-header 내부에서 full-bleed로 확장 =====
+// 제목과 그 아래 내용 사이를 넉넉히 띄운다
+body[data-slug$="/index"] .article-title {
+  margin-bottom: 1.5rem;
+}
 
-.hero {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+// "N items under this folder."
+.page-listing>p {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+// 실을 항목이 없는 목록(하위 노트가 모두 목록에서 제외된 비공개 섹션)은 숨긴다.
+// 그대로 두면 "0 items under this folder."가 나온다.
+.page-listing:not(:has(li.section-li)) {
+  display: none;
+}
+
+// 본문 아래 컴포넌트(afterBody)가 하나도 없으면 빈 영역의 구분선과 여백을 숨긴다
+.page>#quartz-body .page-footer:empty {
+  display: none;
 }
 
 // ===== 목록(아카이브·최근 글) =====
 
-.popover-hint > div > h2 {
+.popover-hint>div>h2 {
   font-size: 1.3rem;
   font-weight: 700;
   margin: 1.5rem 0 0.5rem;
   letter-spacing: -0.01em;
 }
 
-.popover-hint > div > h2 a {
+.popover-hint>div>h2 a {
   color: var(--dark);
   text-decoration: none;
 }
 
-.popover-hint > div > div > h3 {
+.popover-hint>div>div>h3 {
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.95rem;
@@ -151,19 +161,19 @@ li.section-li {
   }
 }
 
-li.section-li > .section {
+li.section-li>.section {
   display: flex !important;
   grid-template-columns: none;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.5rem 0;
+  padding: 0.6rem 0;
   border: none;
   border-radius: 0;
   margin-bottom: 0;
 }
 
-li.section-li > .section .meta {
-  font-size: 0.8rem;
+li.section-li>.section .meta {
+  font-size: 0.88rem;
   color: var(--gray);
   opacity: 1;
   margin: 0;
@@ -171,16 +181,16 @@ li.section-li > .section .meta {
   flex-shrink: 0;
 }
 
-li.section-li > .section > .desc h3 {
+li.section-li>.section>.desc h3 {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   text-transform: none;
   letter-spacing: normal;
   color: var(--dark);
   margin: 0;
 }
 
-li.section-li > .section > .desc h3 a {
+li.section-li>.section>.desc h3 a {
   color: var(--dark);
   text-decoration: none;
   background-color: transparent;
@@ -191,7 +201,7 @@ li.section-li > .section > .desc h3 a {
   }
 }
 
-li.section-li > .section > .tags {
+li.section-li>.section>.tags {
   display: none;
 }
 
@@ -262,7 +272,7 @@ a.internal:hover {
 
 // ===== 본문 타이포그래피 =====
 
-article > h1,
+article>h1,
 h1.article-title {
   font-size: 2.4rem;
   font-weight: 800;
@@ -307,24 +317,29 @@ hr {
   max-width: 40%;
 }
 
-.center > hr {
+.center>hr {
   display: none;
 }
 
 // ===== 태그 =====
 
-ul.tags > li > a.tag-link {
-  border: 1px solid var(--secondary);
+// 태그: 테두리 없이 강조색을 옅게 채운 상자. 적은 그대로(대문자 변환 없이) 보여 주고
+// 안쪽 여백을 작게 잡는다.
+ul.tags>li>a.tag-link {
+  border: none;
   border-radius: 0;
-  padding: 0.1rem 0.5rem;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  transition: all 0.15s ease;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 12%, transparent);
+  transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: var(--secondary);
-    color: var(--light);
+    background-color: color-mix(in srgb, var(--secondary) 24%, transparent);
+    color: var(--secondary);
   }
 }
 

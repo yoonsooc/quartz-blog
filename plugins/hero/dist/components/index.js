@@ -1,5 +1,12 @@
-// v4 커스텀 Hero 포팅: 루트/섹션 랜딩·항목 페이지는 full hero,
-// 일반 콘텐츠 페이지는 상단 페이드아웃 배너.
+// 사이트 제목 블록: 왼쪽 칼럼 맨 위에 놓이는 사이트 제목과 부제.
+// 모든 페이지에서 같은 모양이라 목록 페이지와 글 페이지를 오갈 때 화면 구성이
+// 바뀌지 않는다. 예전의 배경 그림은 사이트 전체 배경(custom.scss의 body::before)으로
+// 옮겼다.
+//
+// 옵션
+//   subtitle  제목 아래 한 줄
+//   home      제목을 눌렀을 때 갈 경로. 첫 화면이 리다이렉트 페이지일 때 그 목적지를
+//             직접 걸어 한 번 더 이동하지 않게 한다. 생략하면 사이트 루트다.
 import { jsx, jsxs } from "preact/jsx-runtime"
 
 function pathToRoot(slug) {
@@ -19,99 +26,36 @@ function joinSegments(...args) {
     .join("/")
 }
 
-function inNonRootSection(slug, sections) {
-  return sections.some(
-    (s) => s.prefix !== "" && (slug === s.prefix || slug.startsWith(`${s.prefix}/`)),
-  )
-}
-
 export const Hero = (opts) => {
-  const image = opts?.image ?? "static/bg-city.png"
   const subtitle = opts?.subtitle
-  const sections = opts?.sections ?? []
+  const home = String(opts?.home ?? "").replace(/^\/+|\/+$/g, "")
 
-  const Component = ({ fileData, cfg }) => {
-    const slug = fileData.slug ?? ""
-    const baseDir = pathToRoot(slug)
-    const imgSrc = joinSegments(baseDir, image)
-    const fullHero = slug === "index" || inNonRootSection(slug, sections)
-
-    if (fullHero) {
-      return jsxs("div", {
-        class: "hero",
-        children: [
-          jsx("div", { class: "hero-bg", "data-src": imgSrc }),
-          jsx("div", { class: "hero-gradient" }),
-          jsxs("div", {
-            class: "hero-content",
-            children: [
-              jsx("div", {
-                class: "hero-title",
-                children: jsx("a", { href: baseDir, children: cfg?.pageTitle ?? "" }),
-              }),
-              subtitle &&
-                jsx("div", {
-                  class: "hero-subtitle",
-                  children: Array.isArray(subtitle) ? subtitle.join(" ") : subtitle,
-                }),
-            ],
+  const Component = ({ fileData, cfg, displayClass }) => {
+    const baseDir = pathToRoot(fileData.slug ?? "")
+    const homeHref = home === "" ? baseDir : `${joinSegments(baseDir, home)}/`
+    return jsxs("div", {
+      class: `${displayClass ?? ""} hero`.trim(),
+      children: [
+        jsx("div", {
+          class: "hero-title",
+          children: jsx("a", { href: homeHref, children: cfg?.pageTitle ?? "" }),
+        }),
+        subtitle &&
+          jsx("div", {
+            class: "hero-subtitle",
+            children: Array.isArray(subtitle) ? subtitle.join(" ") : subtitle,
           }),
-        ],
-      })
-    }
-
-    return jsx("div", { class: "page-banner", "data-src": imgSrc })
+      ],
+    })
   }
 
-  Component.afterDOMLoaded = `
-    function setBgImages() {
-      document.querySelectorAll('[data-src]').forEach(function(el) {
-        if (el.classList.contains('hero-bg') || el.classList.contains('page-banner')) {
-          el.style.backgroundImage = 'url("' + el.getAttribute('data-src') + '")';
-        }
-      });
-    }
-    setBgImages();
-    document.addEventListener('nav', () => setTimeout(setBgImages, 0));
-  `
-
   Component.css = `
-.hero {
-  position: relative;
-  height: 220px;
-  overflow: hidden;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background-position: center 30%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0.18;
-  mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-}
-.hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255,255,255,0.6) 70%, var(--light) 100%);
-}
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
 .hero-title {
   font-family: "DM Serif Display", serif;
   font-weight: 700;
   letter-spacing: 0.02em;
-  font-size: 2rem;
+  font-size: 1.7rem;
+  line-height: 1.2;
 }
 .hero-title a {
   color: var(--dark);
@@ -120,28 +64,17 @@ export const Hero = (opts) => {
   font-weight: 700;
 }
 .hero-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
   color: var(--darkgray);
-  margin-top: 0.3rem;
+  margin-top: 0.35rem;
 }
-:root[saved-theme="dark"] .hero-bg { opacity: 0.10; }
-:root[saved-theme="dark"] .hero-gradient {
-  background: linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(14,14,14,0.6) 70%, var(--light) 100%);
+/* 좁은 화면: 왼쪽 칼럼이 본문 위 가로 줄이 된다. 제목이 남는 폭을 차지한다 */
+@media (max-width: 800px) {
+  .hero { flex: 1 1 auto; }
+  .hero-title { font-size: 1.4rem; }
+  .hero-subtitle { font-size: 0.8rem; }
 }
-.page-banner {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 350px;
-  z-index: 0;
-  background-position: center top;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0.12;
-  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  pointer-events: none;
-}
-:root[saved-theme="dark"] .page-banner { opacity: 0.08; }
 `
 
   return Component
